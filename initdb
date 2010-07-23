@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rm -f survey.db
+sqlite3 survey.db < surveydb.sql

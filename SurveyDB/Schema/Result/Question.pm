@@ -23,13 +23,15 @@ sub get_answered {
 	my $options = $self->get_options;
 	my @ops = map { $_->{oid} } @$options;
 
-	my $result = $self->result_source->schema->resultset('Answer')->find(
+	my $result = $self->result_source->schema->resultset('Answer')->search(
 		{ 
-			option => {'-in' => \@ops },
+			option => \@ops,
 			user => $user
 		}
-	);
-	return $result;
+	)->single;
+	return $result->aid;
+}
+sub delete_answer {
 }
 sub answer($$) {
 	my ($self, $user, $option) = @_;

@@ -71,4 +71,21 @@ sub answer {
 	}
 }
 
+sub statics {
+	my $self = shift;
+	my $answers = $self->answers;
+	my $options = $self->options;
+	my $total = $answers->count;
+	my $ret = {
+		total => $total,
+	};
+	if($self->type =~ /-choice$/) {
+		$ret->{options} = {};
+		while(my $option = $options->next) {
+			my $count = $answers->search({option => $option->oid})->count;
+			$ret->{options}->{$option->text} = $count;
+		}
+	}
+	return $ret;
+}
 1;

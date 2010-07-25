@@ -1,5 +1,4 @@
 package SurveyDB::Schema::Result::Question;
-use Carp;
 use base qw/DBIx::Class::Core/;
 
 __PACKAGE__->table('question');
@@ -52,7 +51,7 @@ sub answer {
 			});
 	} elsif($self->type eq 'open-question') {
 		my $response = $_[2];
-		croak "empty response" unless defined $response;
+		die "empty response" unless defined $response;
 
 		if($user) { #if already answered, update it
 			my $ans = $self->get_user_answered($user);
@@ -67,7 +66,7 @@ sub answer {
 				question => $self->qid,
 			});
 	} else {
-		croak "unknown type";
+		warn "unknown type";
 		return;
 	}
 }

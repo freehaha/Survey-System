@@ -16,17 +16,46 @@ sub add_topic {
 1;
 
 package main;
-sub question($%) {
-	my ($question, %options) = @_;
+sub custom_choice($$%) {
+	my ($sn, $question, %options) = @_;
 	return {
+			sn => $sn,
 			question => $question,
+			type => 'custom-choice',
 			%options
 	};
 }
 
+sub likert_choice($$%) {
+	my ($sn, $question, %options) = @_;
+	return {
+			sn => $sn,
+			question => $question,
+			type => 'likert-choice',
+			%options
+	};
+}
+
+sub open_question($$) {
+	my ($sn, $question) = @_;
+	return {
+			sn => $sn,
+			question => $question,
+			type => 'open-question',
+	};
+}
+
 sub options {
-	return ( option => [
+	#TODO: apply Likert styles
+	return ( options => [
 		map{ {text =>  $_} } @_
+	]);
+}
+
+sub custom_options(%) {
+	my %options = @_;
+	return ( options => [
+		map{ {text =>  $_, point => $options{$_}} } keys %options
 	]);
 }
 

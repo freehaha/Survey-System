@@ -9,13 +9,16 @@ create table topic (
 
 create table question (
 	qid integer primary key,
+	type text not null,
 	question text not null,
+	sn integer not null,
 	topic integer not null references topic(tid)
 );
 
 create table option (
 	oid integer primary key,
 	text text not null,
+	point integer,
 	question integer not null references question(qid)
 );
 
@@ -23,5 +26,7 @@ create table option (
 create table answer (
 	aid integer primary key,
 	user integer,
-	option integer not null references option(oid)
+	response text,
+	option integer,
+	question integer not null references question(qid)
 );

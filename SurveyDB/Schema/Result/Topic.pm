@@ -1,4 +1,5 @@
 package SurveyDB::Schema::Result::Topic;
+use JSON;
 use base qw/DBIx::Class::Core/;
 
 __PACKAGE__->load_components(qw/InflateColumn::DateTime/);
@@ -15,12 +16,23 @@ sub get_questions {
 	my ($self) = @_;
 	my @result = $self->result_source->schema->resultset('Question')->search(
 		{ 'topic' => $self->tid },
+		{ order_by => { -asc => 'sn' }, }
 	);
 	return \@result;
 }
 
 sub add_question {
 	my ($self, $question) = @_;
+}
+
+sub submit {
+	my ($self, $user, $answers) = @_;
+	my @questions = $self->search_related('questions');
+	$answers = decode_json($answers);
+
+	foreach my $question (@questions) {
+		$question->answer($user, $answers->{$question->sn});
+	}
 }
 
 1;

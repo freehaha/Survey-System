@@ -71,11 +71,12 @@ sub answer {
 	}
 }
 
-sub statics {
+sub stat {
 	my $self = shift;
 	my $answers = $self->answers;
 	my $options = $self->options;
 	my $total = $answers->count;
+	my $sum = 0;
 	my $ret = {
 		total => $total,
 	};
@@ -84,7 +85,18 @@ sub statics {
 		while(my $option = $options->next) {
 			my $count = $answers->search({option => $option->oid})->count;
 			$ret->{options}->{$option->text} = $count;
+			$sum += $count * $option->point;
 		}
+		$ret->{avg} =  $sum/$total;
+		$ret->{sum} =  $sum;
+		$sum = 0;
+		$options = $self->options;
+		while(my $option = $options->next) {
+			my $count = $answers->search({option => $option->oid})->count;
+			$ret->{options}->{$option->text} = $count;
+			$sum += $count * (($option->point-$ret->{avg}) ** 2);
+		}
+		$ret->{sdv} = sqrt($sum/($total-1));
 	}
 	return $ret;
 }

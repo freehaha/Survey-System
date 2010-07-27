@@ -23,6 +23,7 @@ my $topic = $schema->add_topic({
 		open_question(3, 'q3'),
 	],
 	cond_user(1,2,3,4,5),
+	cond_bot('bot1','bot2','bot3'),
 });
 $schema->txn_commit;
 

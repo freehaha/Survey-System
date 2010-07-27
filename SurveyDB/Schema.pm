@@ -185,7 +185,12 @@ sub cond_query(@) {
 		map { {query => $_} } @_
 	];
 }
-sub cond_user(@) {
+sub cond_bot(@) {
+	return cond_bot => [
+		map { {bot => $_} } @_
+	];
+}
+sub cond_chatroom(@) {
 	return cond_chatroom => [
 		map { {uid => $_} } @_
 	];

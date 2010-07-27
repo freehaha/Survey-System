@@ -32,8 +32,9 @@ create table answer (
 );
 
 create table finished (
+	fid integer primary key,
 	topic integer not null references topic(tid),
-	user integer
+	uid integer
 );
 
 create table cond_user (

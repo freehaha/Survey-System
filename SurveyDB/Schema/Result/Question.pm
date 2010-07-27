@@ -87,8 +87,8 @@ sub stat {
 			$ret->{options}->{$option->text} = $count;
 			$sum += $count * $option->point;
 		}
-		$ret->{avg} =  $sum/$total;
-		$ret->{sum} =  $sum;
+		$ret->{avg} = $total?$sum/$total:0;
+		$ret->{sum} = $sum;
 		$sum = 0;
 		$options = $self->options;
 		while(my $option = $options->next) {
@@ -96,7 +96,7 @@ sub stat {
 			$ret->{options}->{$option->text} = $count;
 			$sum += $count * (($option->point-$ret->{avg}) ** 2);
 		}
-		$ret->{sdv} = sqrt($sum/($total-1));
+		$ret->{sdv} = $total>1?sqrt($sum/($total-1)):0;
 	}
 	return $ret;
 }

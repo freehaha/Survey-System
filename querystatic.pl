@@ -26,8 +26,10 @@ while(my $question = $question->next) {
 		#percentage of each option chosen
 		while( my $option = $options->next ) {
 			my $text = $option->text;
-			printf "  %s(%d pt): %.2f%%\n", $text,
-		   		$option->point, $stat->{options}->{$text}/$total*100;
+			if($total) {
+				printf "  %s(%d pt): %.2f%%\n", $text,
+					$option->point, $stat->{options}->{$text}/$total*100;
+			}
 		}
 	} else {
 		print "open question, total responded: ", $total, "\n";

@@ -47,8 +47,9 @@ sub open_question($$) {
 
 sub options {
 	#TODO: apply Likert styles
+	$pt = 0;
 	return ( options => [
-		map{ {text =>  $_} } @_
+		map{ $pt++; {text =>  $_, point=>$pt} } @_
 	]);
 }
 

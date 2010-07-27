@@ -90,7 +90,7 @@ sub stat {
 		$ret->{avg} = $total?$sum/$total:0;
 		$ret->{sum} = $sum;
 		$sum = 0;
-		$options = $self->options;
+		$options->reset;
 		while(my $option = $options->next) {
 			my $count = $answers->search({option => $option->oid})->count;
 			$ret->{options}->{$option->text} = $count;

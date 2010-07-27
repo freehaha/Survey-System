@@ -14,7 +14,7 @@ $schema->txn_begin;
 my $topic = $schema->add_topic({
 	topic => 'test survey',
 	description => 'a survey for test',
-	user => 1,
+	creator => 1,
 	begin_date => timelocal(0,0,0,21,7,2010),
 	close_date => timelocal(0,0,0,22,7,2010),
 	questions => [

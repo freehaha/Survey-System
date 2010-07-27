@@ -30,3 +30,33 @@ create table answer (
 	option integer,
 	question integer not null references question(qid)
 );
+
+create table finished (
+	user integer,
+	topic integer
+);
+
+create table cond_user (
+	topic integer,
+	uid integer
+);
+
+create table cond_group (
+	topic integer,
+	gid integer
+);
+
+create table cond_chatroom (
+	topic integer,
+	chatroom integer
+);
+
+create table cond_bot (
+	topic integer,
+	bot text
+);
+
+create table cond_query (
+	topic integer,
+	query text
+);

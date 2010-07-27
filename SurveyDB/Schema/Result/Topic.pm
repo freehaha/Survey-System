@@ -11,6 +11,14 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key('tid');
 __PACKAGE__->has_many('questions' => 'SurveyDB::Schema::Result::Question');
+__PACKAGE__->has_many('finished' => 'SurveyDB::Schema::Result::Finished');
+
+#condition filters
+__PACKAGE__->has_many('cond_user' => 'SurveyDB::Schema::Result::Condition::User');
+__PACKAGE__->has_many('cond_group' => 'SurveyDB::Schema::Result::Condition::Group');
+__PACKAGE__->has_many('cond_chatroom' => 'SurveyDB::Schema::Result::Condition::Chatroom');
+__PACKAGE__->has_many('cond_bot' => 'SurveyDB::Schema::Result::Condition::Bot');
+__PACKAGE__->has_many('cond_query' => 'SurveyDB::Schema::Result::Condition::Query');
 
 sub get_questions {
 	my ($self) = @_;

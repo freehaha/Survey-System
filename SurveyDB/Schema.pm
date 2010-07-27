@@ -165,4 +165,29 @@ sub custom_options(%) {
 	]);
 }
 
+sub cond_user(@) {
+	return cond_user => [
+		map { {uid => $_} } @_
+	];
+}
+sub cond_group(@) {
+	return cond_group => [
+		map { {gid => $_} } @_
+	];
+}
+sub cond_event(@) {
+	return cond_event => [
+		map { {event => $_} } @_
+	];
+}
+sub cond_query(@) {
+	return cond_query => [
+		map { {query => $_} } @_
+	];
+}
+sub cond_user(@) {
+	return cond_chatroom => [
+		map { {uid => $_} } @_
+	];
+}
 1;

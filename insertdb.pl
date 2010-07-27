@@ -22,6 +22,7 @@ my $topic = $schema->add_topic({
 		likert_choice(2, 'q2', options qw/option3 option4/),
 		open_question(3, 'q3'),
 	],
+	cond_user(1,2,3,4,5),
 });
 $schema->txn_commit;
 

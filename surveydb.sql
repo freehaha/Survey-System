@@ -32,31 +32,42 @@ create table answer (
 );
 
 create table finished (
-	user integer,
-	topic integer
+	topic integer not null references topic(tid),
+	user integer
 );
 
 create table cond_user (
-	topic integer,
+	cid integer primary key,
+	topic integer not null references topic(tid),
 	uid integer
 );
 
 create table cond_group (
-	topic integer,
+	cid integer primary key,
+	topic integer not null references topic(tid),
 	gid integer
 );
 
 create table cond_chatroom (
-	topic integer,
+	cid integer primary key,
+	topic integer not null references topic(tid),
 	chatroom integer
 );
 
 create table cond_bot (
-	topic integer,
+	cid integer primary key,
+	topic integer not null references topic(tid),
 	bot text
 );
 
 create table cond_query (
-	topic integer,
+	cid integer primary key,
+	topic integer not null references topic(tid),
+	query text
+);
+
+create table cond_event (
+	cid integer primary key,
+	topic integer not null references topic(tid),
 	query text
 );

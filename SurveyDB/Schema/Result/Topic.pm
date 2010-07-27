@@ -19,6 +19,7 @@ __PACKAGE__->has_many('cond_group' => 'SurveyDB::Schema::Result::Condition::Grou
 __PACKAGE__->has_many('cond_chatroom' => 'SurveyDB::Schema::Result::Condition::Chatroom');
 __PACKAGE__->has_many('cond_bot' => 'SurveyDB::Schema::Result::Condition::Bot');
 __PACKAGE__->has_many('cond_query' => 'SurveyDB::Schema::Result::Condition::Query');
+__PACKAGE__->has_many('cond_event' => 'SurveyDB::Schema::Result::Condition::Event');
 
 sub get_questions {
 	my ($self) = @_;

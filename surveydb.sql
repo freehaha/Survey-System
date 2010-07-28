@@ -12,7 +12,7 @@ create table question (
 	type text not null,
 	question text not null,
 	sn integer not null,
-	topic integer not null references topic(tid)
+	topic integer not null references topic(topic)
 );
 
 create table option (
@@ -32,43 +32,43 @@ create table answer (
 );
 
 create table finished (
-	fid integer primary key,
-	topic integer not null references topic(tid),
-	uid integer
+	topic integer not null references topic(topic),
+	uid integer,
+	primary key (topic, uid)
 );
 
 create table cond_user (
-	cid integer primary key,
-	topic integer not null references topic(tid),
-	uid integer
+	topic integer not null references topic(topic),
+	uid integer,
+	primary key (topic, uid)
 );
 
 create table cond_group (
-	cid integer primary key,
-	topic integer not null references topic(tid),
-	gid integer
+	topic integer not null references topic(topic),
+	gid integer,
+	primary key (topic, gid)
 );
 
 create table cond_chatroom (
-	cid integer primary key,
-	topic integer not null references topic(tid),
-	chatroom integer
+	topic integer not null references topic(topic),
+	chatroom text,
+	primary key (topic, chatroom)
 );
 
 create table cond_bot (
-	cid integer primary key,
-	topic integer not null references topic(tid),
-	bot text
+	topic integer not null references topic(topic),
+	bot text,
+	primary key (topic, bot)
 );
 
 create table cond_query (
-	cid integer primary key,
-	topic integer not null references topic(tid),
-	query text
+	topic integer not null references topic(topic),
+	query text,
+	primary key (topic, query)
 );
 
 create table cond_event (
-	cid integer primary key,
-	topic integer not null references topic(tid),
-	query text
+	topic integer not null references topic(topic),
+	query text,
+	primary key (topic, query)
 );

@@ -189,11 +189,16 @@ sub options($) {
 	return ( options => $ret );
 }
 
-sub custom_options(%) {
-	my %options = @_;
-	return ( options => [
-		map{ {text =>  $_, point => $options{$_}} } keys %options
-	]);
+sub custom_options(@) {
+	my @options = @_;
+	my @opts = ();
+	if($#options % 2 != 0) {
+		warn 'option not paired';
+	}
+	for(my $i = 0; $i < $#options; $i+=2) {
+		push @opts, {text => $options[$i], point => $options[$i+1]};
+	}
+	return ( options => \@opts );
 }
 
 sub cond_user(@) {

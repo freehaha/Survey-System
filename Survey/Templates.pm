@@ -1,5 +1,6 @@
 package Survey::Templates;
 
+use utf8;
 use Template::Declare::Tags;
 use base 'Template::Declare';
 
@@ -52,7 +53,7 @@ private template add_form => sub {
 template date_selector => sub {
 	my $self = shift;
 	my $id = shift || die 'no id supplied for date_selector';
-	input { 
+	input {
 		attr {
 			id => $id, name => $id, type => 'text'
 		}
@@ -64,15 +65,43 @@ template date_selector => sub {
 };
 
 template question_editor => sub {
+	div {
+		attr { id => 'div_qedit' };
+		div { attr { id => 'qbox' }; }
+		input { attr { id => 'btnNewQuestion', type => 'button', value => '新增問題' } };
+		script {
+			outs_raw '
+			var count = 0;
+			$("#btnNewQuestion").click(
+			function() {
+				count++;
+				add_question(count);
+			}
+			);'
+		}
+	}
 };
+
 
 private template include_script => sub {
 	my $self = shift;
 	my $script = shift || return;
 	script {
-		attr { 
+		attr {
 			type => 'text/javascript',
 			src => $script,
+		}
+	}
+};
+
+private template import_css => sub {
+	my $self = shift;
+	my $css = shift || return;
+	link {
+		attr {
+			rel => 'stylesheet',
+			type => 'text/css',
+			href => $css,
 		}
 	}
 };
@@ -82,15 +111,22 @@ template add => sub {
 
 	html {
 		head {
+			title { '新增問卷' };
+			meta  {
+				attr { content => "text/html; charset=utf-8" }
+				attr { 'http-equiv' => "content-type" }
+			}
 			link {
 				attr {
 					type => "text/css",
 					href => "/static/css/ui-lightness/jquery-ui-1.8.2.custom.css",
-					rel => "stylesheet" 
+					rel => "stylesheet"
 				}
 			};
+			show('import_css', '/static/css/form.css');
 			show('include_script', '/static/js/jquery-1.4.2.min.js');
 			show('include_script', '/static/js/jquery-ui-1.8.2.custom.min.js');
+			show('include_script', '/static/js/surveyui.js');
 		}
 		body {
 			show('add_form');

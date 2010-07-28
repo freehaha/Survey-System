@@ -1,0 +1,29 @@
+.option {
+	width: 100px;
+}
+
+div.option {
+	display: inline;
+	margin-right: 3px;
+}
+
+.type_sel {
+	margin-right: 10px;
+}
+
+div.close {
+	float: right;
+	cursor: pointer;
+}
+
+.qbox {
+	background-color: #CCCCFF;
+	border:1px solid #AFAFAF;
+	border-radius:5px;
+	padding: 5px;
+	width: 50%;
+	margin-bottom: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius:5px;
+	-khtml-border-radius:5px;
+}  

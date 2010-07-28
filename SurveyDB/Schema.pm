@@ -15,14 +15,11 @@ use base qw/DBIx::Class::Schema/;
 use utf8;
 use Exporter 'import';
 our @EXPORT = qw(
-	add_topic
-	get_topics
 	likert_choice
 	custom_choice
 	open_question
 	custom_options
 	options
-	get_topics
 	cond_user
 	cond_group
 	cond_event

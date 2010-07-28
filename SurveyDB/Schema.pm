@@ -60,6 +60,7 @@ sub get_topics {
 			select => ['topic']
 		}
 	);
+	return [] if $topics->count == 0;
 	$topics->result_class('DBIx::Class::ResultClass::HashRefInflator');
 
 	if(exists $cond{uid}) {
@@ -107,6 +108,24 @@ sub get_topics {
 	$rs_bot->result_class('DBIx::Class::ResultClass::HashRefInflator');
 	$topics = $topics->intersect($rs_bot);
 	undef $rs_bot;
+
+
+	if(exists $cond{event}) {
+		my $rs_event = $self->resultset('Condition::Event')->search(
+			{event => [$cond{event}, 'all']}, {select => ['topic']}
+		);
+		return [] if $rs_event->count == 0;
+		$rs_event->result_class('DBIx::Class::ResultClass::HashRefInflator');
+		$topics = $topics->intersect($rs_event);
+	} elsif(exists $cond{query}) {
+		my $rs_query = $self->resultset('Condition::Query')->search(
+			{query => [$cond{query}, 'all']}, {select => ['topic']}
+		);
+		return [] if $rs_query->count == 0;
+		$rs_query->result_class('DBIx::Class::ResultClass::HashRefInflator');
+		$topics = $topics->intersect($rs_query);
+	}
+
 	my @tcs = map{$_->{topic}} $topics->all;
 	return \@tcs;
 }

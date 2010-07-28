@@ -1,7 +1,7 @@
 create table topic (
-	tid integer primary key,
+	topic integer primary key,
 	creator integer, -- owner
-	topic text not null,
+	title text not null,
 	description text, 
 	begin_date date,
 	close_date date

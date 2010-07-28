@@ -4,12 +4,12 @@ use base qw/DBIx::Class::Core/;
 
 __PACKAGE__->load_components(qw/InflateColumn::DateTime/);
 __PACKAGE__->table('topic');
-__PACKAGE__->add_columns(qw/tid topic description creator/);
+__PACKAGE__->add_columns(qw/topic title description creator/);
 __PACKAGE__->add_columns(
 	begin_date => { data_type => 'datetime' },
 	close_date => { data_type => 'datetime' }
 );
-__PACKAGE__->set_primary_key('tid');
+__PACKAGE__->set_primary_key('topic');
 __PACKAGE__->has_many('questions' => 'SurveyDB::Schema::Result::Question');
 __PACKAGE__->has_many('finished' => 'SurveyDB::Schema::Result::Finished');
 
@@ -24,7 +24,7 @@ __PACKAGE__->has_many('cond_event' => 'SurveyDB::Schema::Result::Condition::Even
 sub get_questions {
 	my ($self) = @_;
 	my @result = $self->result_source->schema->resultset('Question')->search(
-		{ 'topic' => $self->tid },
+		{ 'topic' => $self->topic },
 		{ order_by => { -asc => 'sn' }, }
 	);
 	return \@result;

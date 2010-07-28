@@ -6,9 +6,9 @@ use strict;
 
 my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');
 
-#get the topic where tid=1
+#get the topic where topic=1
 my $t = $schema->resultset('Topic')->find(
-	{ tid => 1 }
+	{ topic => 1 }
 );
 
 #query the statof each question

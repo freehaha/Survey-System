@@ -9,7 +9,7 @@ use strict;
 
 my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');
 my $t = $schema->resultset('Topic')->find(
-	{ tid => 1 }
+	{ topic => 1 }
 );
 
 #user 1, 2, 3

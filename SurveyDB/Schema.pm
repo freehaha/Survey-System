@@ -1,8 +1,21 @@
+package SurveyDB::Schema::ResultSet;
+
+use strict;
+use warnings;
+
+use base 'DBIx::Class::ResultSet';
+
+__PACKAGE__->load_components('Helper::ResultSet');
+
+1;
+
+
 package SurveyDB::Schema;
 use base qw/DBIx::Class::Schema/;
-use Set::Scalar;
 
-__PACKAGE__->load_namespaces();
+__PACKAGE__->load_namespaces(
+	default_resultset_class => 'ResultSet',
+);
 
 sub add_topic {
 	my ($self, $topic) = @_;
@@ -15,107 +28,87 @@ sub add_topic {
 	$ret;
 }
 =begin get_topics
-conditions can be supplied with:
+some queries that make sense
+1. [uid] in a [chatroom] with a [bot] at a particular [time]
+2. [uid] in a [chatroom] says some particular [query] to [bot] or in a [chatroom] at a particular [time]
+3. [uid] in a [chatroom] and some [event] happening with some [bot] at some [time]
 
-	time(default now), [uid], [gid], bot, query, chatroom, event
+as a result, uid, chatroom, bot and time are always examed,
+if no such conditions exists, assume that all topics qualified.
 
-in which uid, gid are mutually exclusive, that is, if both are assigned,
-only uid will be considered
+if query string is supplied, look up in the database with that string.
+if there's no result, assume that non of the topics qualified.
+same with event.
+
+note that query and event are mutually exclusive.
 =cut
 sub get_topics {
 	my ($self, %cond) = @_;
 
 	my $first = 1;
-	my $topics = Set::Scalar->new;
+	my $topics;
 
-	if(exists $cond{query}) {
-		my $cond_query = $self->resultset('Condition::Query');
-		my @rs= $cond_query->search(
-			{ query => $cond{query} },
-			{ group_by => 'topic' }
-		);
-		if(@rs) {
-			$topics->insert(map { $_->topic->tid } @rs);
-			$first = 0;
+	#time filtering
+	my $time = time();
+	$time = $cond{time} if exists $cond{time};
+	$topics = $self->resultset('Topic')->search(
+		{
+			begin_date => { '<' => $time },
+			close_date => { '>' => $time },
+		},
+		{
+			select => ['topic']
 		}
-	}
-
-	if(exists $cond{chatroom}) {
-		my $cond_query = $self->resultset('Condition::Chatroom');
-		my @chatrooms = $cond_query->search(
-			{ chatroom => $cond{chatroom} },
-			{ group_by => 'topic' }
-		);
-		if($first and @rs) {
-			$topics->insert(map { $_->topic->tid } @rs);
-			$first = 0;
-		} elsif(@rs) {
-			my $set = Set::Scalar->new(map { $_->topic->tid } @rs);
-			$topics = $topics->intersection($set);
-			undef $set;
-		}
-	}
-	if(exists $cond{bot}) {
-		my $cond_query = $self->resultset('Condition::Bot');
-		my @chatrooms = $cond_query->search(
-			{ bot => $cond{bot} },
-			{ group_by => 'topic' }
-		);
-		if($first and @rs) {
-			$topics->insert(map { $_->topic->tid } @rs);
-			$first = 0;
-		} elsif(@rs) {
-			my $set = Set::Scalar->new(map { $_->topic->tid } @rs);
-			$topics = $topics->intersection($set);
-			undef $set;
-		}
-	}
-	if(exists $cond{event}) {
-		my $cond_query = $self->resultset('Condition::Event');
-		my @chatrooms = $cond_query->search(
-			{ event => $cond{event} },
-			{ group_by => 'topic' }
-		);
-		if($first and @rs) {
-			$topics->insert(map { $_->topic->tid } @rs);
-			$first = 0;
-		} elsif(@rs) {
-			my $set = Set::Scalar->new(map { $_->topic->tid } @rs);
-			$topics = $topics->intersection($set);
-			undef $set;
-		}
-	}
+	);
+	$topics->result_class('DBIx::Class::ResultClass::HashRefInflator');
 
 	if(exists $cond{uid}) {
-		my $cond_user = $self->resultset('Condition::User');
-		my @rs = $cond_user->search(
-			{ uid => {-in => $cond{uid}}},
-			{ group_by => 'topic' }
+		my $cond = $self->resultset('Condition::User');
+		my $uid = $cond{uid};
+		#my @gid = get_gid($uid);
+		my $gid = [1,2,3,0];
+		my $rs_g = $self->resultset('Condition::Group')->search(
+			{gid => [-in => $gid]}, {select => ['topic']}
 		);
-		if($first and @rs) {
-			$topics->insert(map { $_->topic->tid } @rs);
-			$first = 0;
-		} elsif(@rs) {
-			my $set = Set::Scalar->new(map { $_->topic->tid } @rs);
-			$topics = $topics->intersection($set);
-			undef $set;
-		}
-	} elsif(exists $cond{gid}) {
-		my $cond_user = $self->resultset('Condition::Group');
-		my @rs = $cond_user->search(
-			{ gid => {-in => $cond{gid}}},
-			{ group_by => 'topic' }
-		);
-		if($first and @rs) {
-			$topics->insert(map { $_->topic->tid } @rs);
-			$first = 0;
-		} elsif(@rs) {
-			my $set = Set::Scalar->new(map { $_->topic->tid } @rs);
-			$topics = $topics->intersection($set);
-			undef $set;
-		}
+		my $rs_u = $cond->search({uid => [$uid, 0]}, { select => ['topic']});
+		$_->result_class('DBIx::Class::ResultClass::HashRefInflator')
+			for ($rs_g, $rs_u);
+
+		$topics = $topics->intersect($rs_u->union($rs_g));
+	} else {
+		return [];
 	}
-	$topics;
+
+	my $rs_chatroom;
+	if(exists $cond{chatroom}) {
+		$rs_chatroom = $self->resultset('Condition::Chatroom')->search(
+			{chatroom => [$cond{chatroom}, 'all']}, {select => ['topic']}
+		);
+	} else {
+		$rs_chatroom = $self->resultset('Condition::Chatroom')->search(
+			{chatroom => ['all']}, {select => ['topic']}
+		);
+	}
+	return [] if $rs_chatroom->count == 0;
+	$rs_chatroom->result_class('DBIx::Class::ResultClass::HashRefInflator');
+	$topics = $topics->intersect($rs_chatroom);
+	undef $rs_chatroom;
+	my $rs_bot;
+	if(exists $cond{bot}) {
+		$rs_bot = $self->resultset('Condition::Bot')->search(
+			{bot => [$cond{bot}, 'all']}, {select => ['topic']}
+		);
+	} else {
+		$rs_bot = $self->resultset('Condition::Bot')->search(
+			{bot => ['all']}, {select => ['topic']}
+		);
+	}
+	return [] if $rs_bot->count == 0;
+	$rs_bot->result_class('DBIx::Class::ResultClass::HashRefInflator');
+	$topics = $topics->intersect($rs_bot);
+	undef $rs_bot;
+	my @tcs = map{$_->{topic}} $topics->all;
+	return \@tcs;
 }
 
 1;

@@ -16,7 +16,6 @@ use parent qw/Tatsumaki::Handler/;
 use JSON;
 use utf8;
 use SurveyDB::Schema;
-use Data::Dumper;
 use Time::Local;
 
 my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');
@@ -45,9 +44,10 @@ sub get {
 			$i++;
 			$q = $query->[$i];
 			my $question = $q->{value};
+			$i++;
 			if($type eq 'likert-choice') {
 				my $option_num = 5;
-				for($i++; $i < scalar(@$query); $i++) {
+				for(; $i < scalar(@$query); $i++) {
 					$q = $query->[$i];
 					my $key = $q->{name};
 					if($key eq 'lkt') {
@@ -60,6 +60,25 @@ sub get {
 				push(@{$topic->{questions}}, likert_choice($q_count, $question, options $option_num));
 				$q_count++;
 			} elsif($type eq 'custom-choice') {
+				my $pt;
+				my $option;
+				my @options = ();
+				for(; $i < scalar(@$query); $i++) {
+					$q = $query->[$i];
+					my $key = $q->{name};
+					if($key eq 'pt') {
+						$pt = $q->{value};
+						$i++;
+						$q = $query->[$i];
+						$option = $q->{value};
+						push @options, $pt, $option;
+					} elsif ($key eq 'qtype') {
+						$i--;
+						last;
+					}
+				}
+				push(@{$topic->{questions}}, custom_choice($q_count, $question, custom_options @options));
+				$q_count++;
 			} elsif($type eq 'open-question') {
 				for(; $i < scalar(@$query); $i++) {
 					$q = $query->[$i];
@@ -77,7 +96,9 @@ sub get {
 			#return;
 		}
 	}
-	$self->write(Dumper($topic));
+	my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');
+	$topic = $schema->add_topic($topic);
+	$self->write(encode_json({'success' => $topic->topic}));
 }
 
 1;

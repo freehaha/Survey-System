@@ -29,6 +29,9 @@ private template 'util/footer' => sub {
 private template add_form => sub {
 	my $self = shift;
 	form {
+		attr {
+			onsubmit => 'return add_form(this);',
+		};
 		div {
 			span { '標題:' };
 			input { attr{ id=>'title', name => 'title',  type=>'text' } };
@@ -46,7 +49,8 @@ private template add_form => sub {
 			show('date_selector', 'close_date');
 		};
 		show('question_editor');
-		input { attr{ value=>'Add', type=>'submit' } };
+		input { attr{ value=>'新增問卷', type=>'submit' } };
+		input { attr{ value=>'重新來過', type=>'reset' } };
 	}
 };
 

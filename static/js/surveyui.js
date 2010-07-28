@@ -15,17 +15,17 @@ function add_question(count)
 
 function change_type(count)
 {
-	var v = parseInt($("#s_"+count).val());
+	var v = $("#s_"+count).val();
 	$("#qb_"+count+"_inner").empty();
 	switch(v) {
-		case 1: /* likert-style options */
+		case 'likert-choice': /* likert-style options */
 			$('#qb_'+count+'_inner').append(likert_options());
 			$('#s_lkt_'+count).change(
 				function() {
 				}
 			);
 			break;
-		case 2: /* custom options */
+		case 'custom-choice': /* custom options */
 			$('#qb_'+count+'_inner').append(options(count));
 			$('#btn_add_'+count).click(
 				function() {
@@ -38,11 +38,12 @@ function change_type(count)
 				}
 			);
 			break;
-		case 3:
+		case 'open-question':
 			break;
 	}
 }
-function new_option(count) {
+function new_option(count)
+{
 	var text = '<div class="option"><select name="pt">';
 	for(var i=1;i<=20;i++) {
 		text += '<option value='+i+'>'+i+'</option>';
@@ -51,7 +52,9 @@ function new_option(count) {
 	text += '<input class="option" name="option" /></div>';
 	$("#options_"+count).append(text);
 }
-function rm_option(count) {
+
+function rm_option(count)
+{
 	$("#options_"+count+" div:last-child").animate({
 		opacity: 0,
 		}, 200, function() {
@@ -59,7 +62,8 @@ function rm_option(count) {
 	});
 }
 
-function options(count) {
+function options(count)
+{
 	var text = '<input id=btn_add_'+count+' type="button" value="新增選項" />';
 	text += '<input id=btn_rm_'+count+' type="button" value="刪除選項" />';
 	text += '<div id="options_'+count+'">';
@@ -72,7 +76,8 @@ function options(count) {
 	return text;
 }
 
-function likert_options(count) {
+function likert_options(count)
+{
 	var text = '<span>選項數目: </span><select id=s_lkt_'+count+' name="lkt">';
 	for(var i=2;i<=9;i++) {
 		text += '<option value='+i+'>'+i+'</option>';
@@ -84,9 +89,9 @@ function likert_options(count) {
 function new_question_box(count) {
 	var text = '<div class="qbox" id="qb_'+count+'">'
 	+ '<select class="type_sel" name="qtype" id="s_'+count+'">'
-	+ '<option value="1" selected="1">選擇題</option>'
-	+ '<option value="2">選擇題(自訂)</option>'
-	+ '<option value="3">自由回答</option>'
+	+ '<option value="likert-choice" selected="1">選擇題</option>'
+	+ '<option value="custom-choice">選擇題(自訂)</option>'
+	+ '<option value="open-question">自由回答</option>'
 	+ '</select>'
 	+ '<span>題目:</span><input name="question" type="text" />'
 	+ '<div class="close" id="dv_close_'+count+'">x</div>'
@@ -96,3 +101,14 @@ function new_question_box(count) {
 
 	return text;
 };
+
+function add_form(form) {
+	$.ajax({
+		url: window.JSON.stringify($(form).serializeArray()),
+		success: function(data) {
+			alert(data);
+
+		}
+	});
+	return false;
+}

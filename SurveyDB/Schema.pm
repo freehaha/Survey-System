@@ -12,6 +12,25 @@ __PACKAGE__->load_components('Helper::ResultSet');
 
 package SurveyDB::Schema;
 use base qw/DBIx::Class::Schema/;
+use utf8;
+use Exporter 'import';
+our @EXPORT = qw(
+	add_topic
+	get_topics
+	likert_choice
+	custom_choice
+	open_question
+	custom_options
+	options
+	get_topics
+	cond_user
+	cond_group
+	cond_event
+	cond_custom
+	cond_query
+	cond_bot
+	cond_chatroom
+); # symbols to export on request
 
 __PACKAGE__->load_namespaces(
 	default_resultset_class => 'ResultSet',
@@ -130,9 +149,6 @@ sub get_topics {
 	return \@tcs;
 }
 
-1;
-
-package main;
 sub custom_choice($$%) {
 	my ($sn, $question, %options) = @_;
 	return {
@@ -162,12 +178,18 @@ sub open_question($$) {
 	};
 }
 
-sub options {
+sub options($) {
 	#TODO: apply Likert styles
-	my $pt = 0;
-	return ( options => [
-		map{ $pt++; {text =>  $_, point=>$pt} } @_
-	]);
+	my $count = shift || 5;
+	my @options = (
+		qw/非常不同意 不同意 沒意見 同意 非常同意/
+	);
+	my $ret = [];
+	foreach my $i (1 .. $count) {
+		push @$ret, {text => $options[$i-1], point => $i};
+	}
+
+	return ( options => $ret );
 }
 
 sub custom_options(%) {

@@ -64,6 +64,7 @@ my $app = Tatsumaki::Application->new([
 	'/stream' => 'StreamWriter',
 	'/feed/(\w+)' => 'FeedHandler',
 	'/' => 'MainHandler',
+	'/add/(\S.*)' => 'Survey::AddTopic',
 	'/add' => 'Survey::Add',
 	]);
 

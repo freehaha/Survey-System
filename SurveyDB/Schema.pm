@@ -192,7 +192,7 @@ sub cond_bot(@) {
 }
 sub cond_chatroom(@) {
 	return cond_chatroom => [
-		map { {uid => $_} } @_
+		map { {chatroom => $_} } @_
 	];
 }
 1;

@@ -30,19 +30,19 @@ private template add_form => sub {
 	my $self = shift;
 	form {
 		div {
-			span {'Title:' };
+			span { '標題:' };
 			input { attr{ id=>'title', name => 'title',  type=>'text' } };
 		};
 		div {
-			span {'Description:' };
+			span {'敘述:' };
 			input { attr{ id=>'desc', name => 'description',  type=>'text' } };
 		};
 		div {
-			span {'Begin Date:'};
+			span {'開始日期:'};
 			show('date_selector', 'begin_date');
 		};
 		div {
-			span {'Close Date:'};
+			span {'結束日期:'};
 			show('date_selector', 'close_date');
 		};
 		show('question_editor');

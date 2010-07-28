@@ -69,6 +69,6 @@ create table cond_query (
 
 create table cond_event (
 	topic integer not null references topic(topic),
-	query text,
-	primary key (topic, query)
+	event text,
+	primary key (topic, event)
 );

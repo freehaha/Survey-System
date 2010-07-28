@@ -13,6 +13,27 @@ function add_question(count)
 	);
 }
 
+function add_condition()
+{
+	$("#cond_box").append(new_condition_box());
+}
+
+function new_condition_box()
+{
+	var text = '<div>';
+	text += '<select name="cond_type"> \
+			<option value="user">使用者</option> \
+			<option value="group">群組</option> \
+			<option value="bot">觸發機器人</option> \
+			<option value="chatroom">聊天室</option> \
+			<option value="query">查詢條件</option> \
+			<option value="event">事件</option> \
+			</select>\
+			<input name="cond" type="text" /> \
+			</div>';
+	return $(text).addClass('condition');
+}
+
 function change_type(count)
 {
 	var v = $("#s_"+count).val();

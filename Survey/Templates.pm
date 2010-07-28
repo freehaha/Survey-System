@@ -49,6 +49,7 @@ private template add_form => sub {
 			show('date_selector', 'close_date');
 		};
 		show('question_editor');
+		show('condition_editor');
 		input { attr{ value=>'新增問卷', type=>'submit' } };
 		input { attr{ value=>'重新來過', type=>'reset' } };
 	}
@@ -86,6 +87,21 @@ template question_editor => sub {
 	}
 };
 
+template condition_editor => sub {
+	div {
+		attr { id => 'div_condedit' };
+		div { attr { id => 'cond_box', class => 'cond_box' }; };
+		input { attr { id => 'btnNewCondition', type => 'button', value => '新增條件' } };
+		script {
+			outs_raw '
+			$("#btnNewCondition").click(
+			function() {
+				add_condition();
+			}
+			);'
+		};
+	}
+};
 
 private template include_script => sub {
 	my $self = shift;

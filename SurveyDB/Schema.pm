@@ -37,7 +37,7 @@ sub add_topic {
 	my ($self, $topic) = @_;
 	die 'not a hash ref' unless ref($topic) eq 'HASH';
 
-	my $ret = $self->resultset('Topic')->find_or_create({
+	my $ret = $self->resultset('Topic')->create({
 		begin_date => time(),
 		%$topic
 	});

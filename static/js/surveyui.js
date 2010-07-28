@@ -6,6 +6,11 @@ function add_question(count)
 			change_type(count);
 		}
 	);
+	$("#dv_close_"+count).click(
+		function() {
+			$('#qb_'+count).remove();
+		}
+	);
 }
 
 function change_type(count)
@@ -67,8 +72,8 @@ function options(count) {
 	return text;
 }
 
-function likert_options() {
-	var text = '<select id=s_lkt_'+count+' name="lkt">';
+function likert_options(count) {
+	var text = '<span>選項數目: </span><select id=s_lkt_'+count+' name="lkt">';
 	for(var i=2;i<=9;i++) {
 		text += '<option value='+i+'>'+i+'</option>';
 	}
@@ -77,13 +82,16 @@ function likert_options() {
 }
 
 function new_question_box(count) {
-	var text = '<div id="qb_'+count+'">'
-	+ '<select name="qtype" id="s_'+count+'">'
-	+ '<option value="1" >選擇題</option>'
+	var text = '<div class="qbox" id="qb_'+count+'">'
+	+ '<select class="type_sel" name="qtype" id="s_'+count+'">'
+	+ '<option value="1" selected="1">選擇題</option>'
 	+ '<option value="2">選擇題(自訂)</option>'
-	+ '<option value="3" selected="1">自由回答</option>'
-	+ '</select><input name="question" type="text" />'
+	+ '<option value="3">自由回答</option>'
+	+ '</select>'
+	+ '<span>題目:</span><input name="question" type="text" />'
+	+ '<div class="close" id="dv_close_'+count+'">x</div>'
 	+ '<div id="qb_'+count+'_inner">'
+	+ likert_options(count)
 	+ '</div></div>';
 
 	return text;

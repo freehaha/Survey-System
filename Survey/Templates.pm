@@ -48,6 +48,19 @@ private template add_form => sub {
 			span {'結束日期:'};
 			show('date_selector', 'close_date');
 		};
+		div {
+			span {'作答時間:'};
+			select {
+				attr { name => 'tl_min' };
+				option { $_ } for (0..60);
+			};
+			span { '分' };
+			select {
+				attr { name => 'tl_sec' };
+				option { $_ } for (0..60);
+			};
+			span { '秒' };
+		};
 		show('question_editor');
 		show('condition_editor');
 		div {
@@ -95,10 +108,10 @@ template question_editor => sub {
 			outs_raw '
 			var count = 0;
 			$("#btnNewQuestion").click(
-			function() {
-				count++;
-				add_question(count);
-			}
+				function() {
+					count++;
+					add_question(count);
+				}
 			);'
 		}
 	}
@@ -109,11 +122,14 @@ template condition_editor => sub {
 		attr { id => 'div_condedit' };
 		div { attr { id => 'cond_box', class => 'cond_box' }; };
 		input { attr { id => 'btnNewCondition', type => 'button', value => '新增條件' } };
+		span { '(以逗號區隔)' };
 		script {
 			outs_raw '
+			var c_count = 0;
 			$("#btnNewCondition").click(
 				function() {
-					add_condition();
+					c_count++;
+					add_condition(c_count);
 				}
 			);'
 		};

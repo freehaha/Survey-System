@@ -39,6 +39,10 @@ sub add_topic {
 
 	my $ret = $self->resultset('Topic')->create({
 		begin_date => time(),
+		cond_user(0),
+		cond_group(0),
+		cond_bot('all'),
+		cond_chatroom('all'),
 		%$topic
 	});
 	$ret;

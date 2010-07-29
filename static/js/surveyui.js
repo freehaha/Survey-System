@@ -13,14 +13,19 @@ function add_question(count)
 	);
 }
 
-function add_condition()
+function add_condition(count)
 {
-	$("#cond_box").append(new_condition_box());
+	$("#cond_box").append(new_condition_box(count));
+	$('#dv_cclose_'+count).click(
+		function () {
+			$(this).parent().remove();
+		}
+	);
 }
 
-function new_condition_box()
+function new_condition_box(count)
 {
-	var text = '<div>';
+	var text = '<div id="cbox_'+count+'">';
 	text += '<select name="cond_type"> \
 			<option value="user">使用者</option> \
 			<option value="group">群組</option> \
@@ -30,6 +35,7 @@ function new_condition_box()
 			<option value="event">事件</option> \
 			</select>\
 			<input name="cond" type="text" /> \
+			<div id="dv_cclose_'+count+'" class="close">X</div> \
 			</div>';
 	return $(text).addClass('condition');
 }
@@ -115,7 +121,7 @@ function new_question_box(count) {
 	+ '<option value="open-question">自由回答</option>'
 	+ '</select>'
 	+ '<span>題目:</span><input name="question" type="text" />'
-	+ '<div class="close" id="dv_close_'+count+'">x</div>'
+	+ '<div class="close" id="dv_close_'+count+'">X</div>'
 	+ '<div id="qb_'+count+'_inner">'
 	+ likert_options(count)
 	+ '</div></div>';

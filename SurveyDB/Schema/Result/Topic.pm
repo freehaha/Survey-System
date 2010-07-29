@@ -4,7 +4,7 @@ use base qw/DBIx::Class::Core/;
 
 __PACKAGE__->load_components(qw/InflateColumn::DateTime/);
 __PACKAGE__->table('topic');
-__PACKAGE__->add_columns(qw/topic title description creator/);
+__PACKAGE__->add_columns(qw/topic title description timelimit creator/);
 __PACKAGE__->add_columns(
 	begin_date => { data_type => 'datetime' },
 	close_date => { data_type => 'datetime' }

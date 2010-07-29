@@ -19,7 +19,14 @@ use SurveyDB::Schema;
 use Time::Local;
 
 my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');
-
+my %cond_dp = (
+	user => \&cond_user,
+	group => \&cond_group,
+	event => \&cond_event,
+	query => \&cond_query,
+	bot => \&cond_bot,
+	chatroom => \&cond_chatroom,
+);
 sub get {
 	my $self = shift;
 	my $query = shift;
@@ -44,6 +51,12 @@ sub get {
 			}
 			$topic->{$key} = 
 				timelocal(0, 0, 0, $date[2], $date[1]-1, $date[0]);
+		} elsif($key eq 'tl_min') {
+			my $min = $q->{value};
+			$i++;
+			$q = $query->[$i];
+			my $sec = $q->{value};
+			$topic->{timelimit} = $min*60+$sec;
 		} elsif($key eq 'qtype') {
 			my $type = $q->{value};
 			$i++;
@@ -56,16 +69,8 @@ sub get {
 			$i++;
 			if($type eq 'likert-choice') {
 				my $option_num = 5;
-				for(; $i < scalar(@$query); $i++) {
-					$q = $query->[$i];
-					my $key = $q->{name};
-					if($key eq 'lkt') {
-						$option_num = $q->{value};
-					} elsif ($key eq 'qtype') {
-						$i--;
-						last;
-					}
-				}
+				$q = $query->[$i];
+				$option_num = $q->{value};
 				push(@{$topic->{questions}}, likert_choice($q_count, $question, options $option_num));
 				$q_count++;
 			} elsif($type eq 'custom-choice') {
@@ -77,11 +82,10 @@ sub get {
 					my $key = $q->{name};
 					if($key eq 'pt') {
 						$pt = $q->{value};
-						$i++;
-						$q = $query->[$i];
+						$q = $query->[++$i];
 						$option = $q->{value};
 						push @options, $pt, $option;
-					} elsif ($key eq 'qtype') {
+					} else {
 						$i--;
 						last;
 					}
@@ -89,22 +93,23 @@ sub get {
 				push(@{$topic->{questions}}, custom_choice($q_count, $question, custom_options @options));
 				$q_count++;
 			} elsif($type eq 'open-question') {
-				for(; $i < scalar(@$query); $i++) {
-					$q = $query->[$i];
-					my $key = $q->{name};
-					if ($key eq 'qtype') {
-						$i--;
-						last;
-					}
-				}
 				push(@{$topic->{questions}}, open_question($q_count, $question));
 				$q_count++;
 			}
+		} elsif($key eq 'cond_type') {
+			my $type = $q->{value};
+			my @cond;
+			$q = $query->[++$i];
+			if($type =~ /(user|group|bot|chatroom|query|event)/) {
+				@cond = $cond_dp{$type}->(split /[,\s]/, $q->{value});
+			}
+			$topic->{'cond_'.$type} = $cond[1];
 		} else {
 			#$self->write("{'error': 'unknown qtype: $type'}");
 			#return;
 		}
 	}
+
 	unless($topic->{title}) {
 		$self->write($json->encode({error => '沒有標題'}));
 		return;

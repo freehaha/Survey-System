@@ -1,6 +1,7 @@
 create table topic (
 	topic integer primary key,
 	creator integer, -- owner
+	timelimit integer,
 	title text not null,
 	description text, 
 	begin_date date,

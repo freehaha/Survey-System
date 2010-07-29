@@ -1,4 +1,5 @@
-package Survey::Add;
+package Survey::Edit;
+use utf8;
 use Survey::Templates;
 use parent qw(Tatsumaki::Handler);
 
@@ -6,19 +7,26 @@ Template::Declare->init( dispatch_to => ['Survey::Templates'] );
 
 sub get {
 	my $self = shift;
-	$self->write(Template::Declare->show('add', 'haha'));
+	my $query = shift;
+	my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db', '', '', { sqlite_unicode => 1});
+	my $topic = $schema->resultset('Topic')->search(
+		{
+			topic => $query,
+		}
+	)->first;
+	$self->write(Template::Declare->show('edit', $topic));
 }
 
 1;
 
-package Survey::AddTopic;
+package Survey::Edit::EditTopic;
 use parent qw/Tatsumaki::Handler/;
 use JSON;
 use utf8;
 use SurveyDB::Schema;
 use Time::Local;
 
-my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db', '', '', { sqlite_unicode => 1});
+my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');
 my %cond_dp = (
 	user => \&cond_user,
 	group => \&cond_group,
@@ -123,7 +131,7 @@ sub get {
 		$self->write($json->encode({error => '沒有提供任何題目'}));
 		return;
 	}
-	my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db', '', '', { sqlite_unicode => 1});
+	my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');
 	$topic = $schema->add_topic($topic);
 	$self->write(encode_json({'success' => $topic->topic}));
 }

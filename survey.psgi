@@ -59,6 +59,7 @@ sub get {
 
 package main;
 use Survey::Add;
+use Survey::Edit;
 
 my $app = Tatsumaki::Application->new([
 	'/stream' => 'StreamWriter',
@@ -66,6 +67,8 @@ my $app = Tatsumaki::Application->new([
 	'/' => 'MainHandler',
 	'/add/(\S.*)' => 'Survey::AddTopic',
 	'/add' => 'Survey::Add',
+	'/edit/(\d+)$' => 'Survey::Edit',
+	'/edit/(\S.*)' => 'Survey::EditTopic',
 	]);
 
 use Plack::Builder;

@@ -19,12 +19,16 @@ sub get {
 			topic => $query,
 		}
 	)->first;
-	$self->write(Template::Declare->show('edit', $topic));
+	if($topic) {
+		$self->write(Template::Declare->show('edit', $topic));
+	} else {
+		$self->write('問卷不存在');
+	}
 }
 
 1;
 
-package Survey::Edit::EditTopic;
+package Survey::EditTopic;
 use parent qw/Tatsumaki::Handler/;
 use JSON;
 use utf8;

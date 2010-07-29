@@ -68,7 +68,7 @@ my $app = Tatsumaki::Application->new([
 	'/add/(\S.*)' => 'Survey::AddTopic',
 	'/add' => 'Survey::Add',
 	'/edit/(\d+)$' => 'Survey::Edit',
-	'/edit/(\S.*)' => 'Survey::EditTopic',
+	'/edit/(\d+)/(\S.*)$' => 'Survey::EditTopic',
 	]);
 
 use Plack::Builder;

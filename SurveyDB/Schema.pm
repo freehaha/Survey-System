@@ -180,14 +180,22 @@ sub open_question($$) {
 }
 
 sub options($) {
-	#TODO: apply Likert styles
 	my $count = shift || 5;
-	my @options = (
-		qw/非常不同意 不同意 沒意見 同意 非常同意/
+	my %options = (
+		2 => [qw/不同意 同意/],
+		3 => [qw/不同意 沒意見 同意/],
+		4 => [qw/非常不同意 不同意 同意 非常同意/],
+		5 => [qw/非常不同意 不同意 沒意見 同意 非常同意/],
+		6 => [qw/非常不同意 不同意 有點不同意 同意 有點同意 非常同意/],
+		7 => [qw/非常不同意 不同意 有點不同意 沒意見 同意 有點同意 非常同意/],
+		8 => [qw/非常不同意 不同意 有點不同意 偏向不同意 偏向同意 有點同意 同意 非常同意/],
+		9 => [qw/非常不同意 不同意 有點不同意 偏向不同意 沒意見 偏向同意 有點同意 同意 非常同意/],
 	);
+	$count = 2 if $count < 2;
+	$count = 9 if $count > 9;
 	my $ret = [];
 	foreach my $i (1 .. $count) {
-		push @$ret, {text => $options[$i-1], point => $i};
+		push @$ret, {text => $options{$count}->[$i-1], point => $i};
 	}
 
 	return ( options => $ret );

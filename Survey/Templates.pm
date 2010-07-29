@@ -112,9 +112,9 @@ template condition_editor => sub {
 		script {
 			outs_raw '
 			$("#btnNewCondition").click(
-			function() {
-				add_condition();
-			}
+				function() {
+					add_condition();
+				}
 			);'
 		};
 	}

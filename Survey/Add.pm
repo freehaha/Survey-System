@@ -23,6 +23,7 @@ my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');
 sub get {
 	my $self = shift;
 	my $query = shift;
+	my $json = JSON->new->utf8(0);
 	my $topic = {
 		questions => [],
 	};
@@ -38,7 +39,7 @@ sub get {
 		} elsif ($key eq 'begin_date' || $key eq 'close_date') {
 			my @date = split '-', $q->{value}; #yy-mm-dd
 			if(scalar(@date) < 3) {
-				$self->write(JSON->new->utf8(0)->encode({error => '日期格式錯誤'}));
+				$self->write($json->encode({error => '日期格式錯誤'}));
 				return;
 			}
 			$topic->{$key} = 
@@ -48,6 +49,10 @@ sub get {
 			$i++;
 			$q = $query->[$i];
 			my $question = $q->{value};
+			unless($question) {
+				$self->write($json->encode({error => '題目空白'}));
+				return;
+			}
 			$i++;
 			if($type eq 'likert-choice') {
 				my $option_num = 5;
@@ -100,8 +105,12 @@ sub get {
 			#return;
 		}
 	}
+	unless($topic->{title}) {
+		$self->write($json->encode({error => '沒有標題'}));
+		return;
+	}
 	unless(scalar(@{$topic->{questions}}) > 0) {
-		$self->write(JSON->new->utf8(0)->encode({error => '沒有提供任何題目'}));
+		$self->write($json->encode({error => '沒有提供任何題目'}));
 		return;
 	}
 	my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');

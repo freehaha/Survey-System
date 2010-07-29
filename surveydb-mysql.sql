@@ -1,42 +1,50 @@
 
+/*
+test code:
+    drop database test;
+    create database test;
+    use test;
+*/
 
--- drop database test;
-create database test;
-use test;
+/*
+    Changes:
+        rename table 'option' to 'options' because of sql keyword.
+        rename table 'question' to 'questions'
+        use 'varchar' instead of 'text'.
+*/
 
 create table topic (
-	topic INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	creator INT, -- owner
-	timelimit INT,
+	topic integer not null auto_increment primary key,
+	creator integer, -- owner
+	timelimit integer,
 	title varchar(120) NOT NULL,
 	description varchar(240), 
 	begin_date date,
 	close_date date
 );
 
-/*
-create table question (
-	qid integer primary key,
+create table questions (
+	qid integer PRIMARY KEY,
 	type text not null,
-	question text not null,
+	questions text not null,
 	sn integer not null,
 	topic integer not null references topic(topic)
 );
 
-create table option (
-	oid integer primary key,
-	text text not null,
+create table options (
+	oid integer not null auto_increment primary key,
+	text varchar(90) not null,
 	point integer,
-	question integer not null references question(qid)
+	questions integer not null references questions(qid)
 );
 
 -- every choice made will be an answer row
 create table answer (
-	aid integer primary key,
+	aid integer not null auto_increment primary key,
 	user integer,
-	response text,
-	option integer,
-	question integer not null references question(qid)
+	response varchar(64),
+	options integer,
+	questions integer not null references questions(qid)
 );
 
 create table finished (
@@ -59,25 +67,24 @@ create table cond_group (
 
 create table cond_chatroom (
 	topic integer not null references topic(topic),
-	chatroom text,
+	chatroom varchar(64),
 	primary key (topic, chatroom)
 );
 
 create table cond_bot (
 	topic integer not null references topic(topic),
-	bot text,
+	bot varchar(255),
 	primary key (topic, bot)
 );
 
 create table cond_query (
 	topic integer not null references topic(topic),
-	query text,
+	query varchar(255),
 	primary key (topic, query)
 );
 
 create table cond_event (
-	topic integer not null references topic(topic),
-	event text,
+	topic  integer not null references topic(topic),
+	event  varchar(255),
 	primary key (topic, event)
 );
-*/

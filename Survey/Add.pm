@@ -37,6 +37,10 @@ sub get {
 			$topic->{description} = $q->{value};
 		} elsif ($key eq 'begin_date' || $key eq 'close_date') {
 			my @date = split '-', $q->{value}; #yy-mm-dd
+			if(scalar(@date) < 3) {
+				$self->write(JSON->new->utf8(0)->encode({error => '日期格式錯誤'}));
+				return;
+			}
 			$topic->{$key} = 
 				timelocal(0, 0, 0, $date[2], $date[1]-1, $date[0]);
 		} elsif($key eq 'qtype') {
@@ -95,6 +99,10 @@ sub get {
 			#$self->write("{'error': 'unknown qtype: $type'}");
 			#return;
 		}
+	}
+	unless(scalar(@{$topic->{questions}}) > 0) {
+		$self->write(JSON->new->utf8(0)->encode({error => '沒有提供任何題目'}));
+		return;
 	}
 	my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');
 	$topic = $schema->add_topic($topic);

@@ -124,11 +124,46 @@ function new_question_box(count) {
 };
 
 function add_form(form) {
+	$('#btnSubmit').attr('disabled', 'disabled');
+	$('#veil').show();
 	$.ajax({
-		url: window.JSON.stringify($(form).serializeArray()),
+		url: '/add/'+window.JSON.stringify($(form).serializeArray()),
+		dataType: 'json',
 		success: function(data) {
-			alert(data);
+			if (data.error) {
+				$('<div>錯誤: ' + data.error + '</div>')
+					.addClass('msgbox-alarm')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
 
+				$('#veil').hide();
+				$('#btnSubmit').removeAttr('disabled');
+			} else {
+				$('<div>成功加入, 將跳轉回新增頁面</div>')
+					.addClass('msgbox')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+							location = '/add';
+						});
+				$('#veil').hide();
+			}
+		},
+		error: function() {
+			$('<div>執行期發生錯誤, 請聯絡管理員</div>')
+				.addClass('msgbox-alarm')
+				.prependTo(document.body)
+				.delay(3000)
+				.fadeOut(200, function() {
+						$(this).remove();
+					});
+
+			$('#veil').hide();
+			$('#btnSubmit').removeAttr('disabled');
 		}
 	});
 	return false;

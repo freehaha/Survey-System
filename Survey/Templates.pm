@@ -50,8 +50,25 @@ private template add_form => sub {
 		};
 		show('question_editor');
 		show('condition_editor');
-		input { attr{ value=>'新增問卷', type=>'submit' } };
-		input { attr{ value=>'重新來過', type=>'reset' } };
+		div {
+	 		attr { id => 'formBtns' };
+			input { attr{ id=> 'btnSubmit', value=>'新增問卷', type=>'submit' } };
+			input { attr{ value=>'重新來過', type=>'reset' } };
+		}
+	}
+	show('veil');
+};
+
+private template veil => sub {
+	div{
+		attr { id => 'veil' };
+		div {
+			attr { id => 'veilbg', class => 'veil' };
+		};
+		div {
+			attr { id => 'veilimg' };
+			img { attr { src => '/static/image/ajax-loader.gif' }; };
+		}
 	}
 };
 

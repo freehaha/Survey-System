@@ -16,6 +16,65 @@ div.close {
 	cursor: pointer;
 }
 
+#div_qedit {
+	margin-bottom: 10px;
+}
+
+#div_condedit {
+	margin-bottom: 10px;
+}
+
+div.msgbox-alarm {
+	background-color: red;
+	color: white;
+	border:1px solid #AFAFAF;
+	border-radius:5px;
+	padding: 5px;
+	width: 50%;
+	margin-bottom: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius:5px;
+	-khtml-border-radius:5px;
+}
+div.msgbox {
+	background-color: darkorange;
+	color: white;
+	border:1px solid #AFAFAF;
+	border-radius:5px;
+	padding: 5px;
+	width: 50%;
+	margin-bottom: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius:5px;
+	-khtml-border-radius:5px;
+}
+
+#veil{
+	display: none;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+}
+#veilbg {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	background-color: #fff;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	z-index: 10;
+}
+#veilimg {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 11;
+}
+
 div.condition {
 	background-color: #FFCCCC;
 	border:1px solid #AFAFAF;
@@ -33,9 +92,12 @@ div.condition {
 	border:1px solid #AFAFAF;
 	border-radius:5px;
 	padding: 5px;
-	width: 50%;
+	width: 60%;
 	margin-bottom: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius:5px;
 	-khtml-border-radius:5px;
 }  
+#formbtns {
+	margin-top: 10px;
+}

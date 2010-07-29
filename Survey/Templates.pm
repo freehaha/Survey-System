@@ -72,6 +72,59 @@ private template add_form => sub {
 	show('veil');
 };
 
+private template edit_form => sub {
+	my $self = shift;
+	my $topic = shift;
+	form {
+		attr {
+			onsubmit => 'return add_form(this);',
+		};
+		div {
+			span { '標題:' };
+			input {
+				attr {
+					id=>'title',
+					readonly => 'readonly',
+					name => 'title',
+					type=> 'text',
+					value=> $topic->title
+				}
+			};
+		};
+		div {
+			span {'敘述:' };
+			input { attr{ id=>'desc', name => 'description',  type=>'text' } };
+		};
+		div {
+			span {'開始日期:'};
+			show('date_selector', 'begin_date', $topic->get_column('begin_date'));
+		};
+		div {
+			span {'結束日期:'};
+			show('date_selector', 'close_date', $topic->get_column('close_date'));
+		};
+		div {
+			my $tl = $topic->timelimit;
+			span {'作答時間:'};
+			select {
+				attr { name => 'tl_min' };
+				option { $tl / 60 };
+				option { $_ } for (0..60);
+			};
+			span { '分' };
+			select {
+				attr { name => 'tl_sec' };
+				option { $tl % 60 };
+				option { $_ } for (0..60);
+			};
+			span { '秒' };
+		};
+		show('question_editor', $topic);
+		show('condition_editor', $topic);
+	}
+	show('veil');
+};
+
 private template veil => sub {
 	div{
 		attr { id => 'veil' };
@@ -88,9 +141,16 @@ private template veil => sub {
 template date_selector => sub {
 	my $self = shift;
 	my $id = shift || die 'no id supplied for date_selector';
+	my $default = shift;
+	use POSIX qw(strftime);
+	if($default) {
+		$default = strftime '%F', localtime($default);
+	}
+
 	input {
 		attr {
-			id => $id, name => $id, type => 'text'
+			id => $id, name => $id, type => 'text',
+			value => $default
 		}
 	}
 	script { attr { type => 'text/javascript' }
@@ -187,3 +247,30 @@ template add => sub {
 	}
 };
 
+template edit => sub {
+	my $self = shift;
+	my $topic = shift || die 'no topic';
+	html {
+		head {
+			title { '編輯問卷' };
+			meta  {
+				attr { content => "text/html; charset=utf-8" }
+				attr { 'http-equiv' => "content-type" }
+			}
+			link {
+				attr {
+					type => "text/css",
+					href => "/static/css/ui-lightness/jquery-ui-1.8.2.custom.css",
+					rel => "stylesheet"
+				}
+			};
+			show('import_css', '/static/css/form.css');
+			show('include_script', '/static/js/jquery-1.4.2.min.js');
+			show('include_script', '/static/js/jquery-ui-1.8.2.custom.min.js');
+			show('include_script', '/static/js/surveyui.js');
+		}
+		body {
+			show('edit_form', $topic);
+		};
+	}
+};

@@ -192,7 +192,7 @@ sub options($) {
 sub custom_options(@) {
 	my @options = @_;
 	my @opts = ();
-	if($#options % 2 != 0) {
+	if(($#options+1) % 2 != 0) {
 		warn 'option not paired';
 	}
 	for(my $i = 0; $i < $#options; $i+=2) {

@@ -2,9 +2,15 @@
 use File::Basename;
 use lib dirname $0;
 use SurveyDB::Schema;
+use utf8;
 use strict;
 
-my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');
+my ($dbuser, $dbpwd) = ('test', '12345');
+my $schema = SurveyDB::Schema->connect(
+	'dbi:mysql:dbname=test',
+	$dbuser, $dbpwd,
+	{ mysql_enable_utf8 => 1}
+);
 
 #get the topic where topic=1
 my $t = $schema->resultset('Topic')->find(
@@ -17,7 +23,7 @@ while(my $question = $question->next) {
 	my $stat = $question->stat;
 	my $total = $stat->{total};
 
-	print $question->question, ": ";
+	print $question->questions, ": ";
 	if($question->type =~ /choice$/) {
 		#print average and standard deviation
 		printf "avg: %.2f, sdv: %.2f\n", $stat->{avg}, $stat->{sdv};

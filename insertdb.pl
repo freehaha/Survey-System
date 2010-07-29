@@ -8,7 +8,12 @@ use strict;
 
 my $path = dirname $0;
 chdir $path;
-my $schema = SurveyDB::Schema->connect('dbi:SQLite:survey.db');
+my ($dbuser, $dbpwd) = ('test', '12345');
+my $schema = SurveyDB::Schema->connect(
+	'dbi:mysql:dbname=test',
+	$dbuser, $dbpwd,
+	{ mysql_enable_utf8 => 1}
+);
 
 $schema->txn_begin;
 $schema->add_topic({

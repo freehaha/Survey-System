@@ -24,9 +24,9 @@ create table topic (
 );
 
 create table questions (
-	qid integer PRIMARY KEY,
-	type text not null,
-	questions text not null,
+	qid integer not null auto_increment PRIMARY KEY,
+	type varchar(15) not null,
+	questions varchar(100) not null,
 	sn integer not null,
 	topic integer not null references topic(topic)
 );

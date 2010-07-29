@@ -1,12 +1,12 @@
 package SurveyDB::Schema::Result::Question;
 use base qw/DBIx::Class::Core/;
 
-__PACKAGE__->table('question');
-__PACKAGE__->add_columns(qw/qid type topic question sn/);
+__PACKAGE__->table('questions');
+__PACKAGE__->add_columns(qw/qid type topic questions sn/);
 __PACKAGE__->set_primary_key('qid');
 __PACKAGE__->belongs_to('topic' => 'SurveyDB::Schema::Result::Topic');
-__PACKAGE__->has_many('options' => 'SurveyDB::Schema::Result::Option');
-__PACKAGE__->has_many('answers' => 'SurveyDB::Schema::Result::Answer');
+__PACKAGE__->has_many('options' => 'SurveyDB::Schema::Result::Option', 'questions');
+__PACKAGE__->has_many('answers' => 'SurveyDB::Schema::Result::Answer', 'questions');
 
 sub get_options {
 	my ($self) = @_;
@@ -21,7 +21,7 @@ sub get_user_answered {
 	my $rs = $self->result_source->schema->resultset('Answer')->search(
 		{
 			user => $user,
-			question => $self->qid,
+			questions => $self->qid,
 		},
 		{ order_by => { -desc => 'aid' }, }
 	);
@@ -39,15 +39,15 @@ sub answer {
 		if($user) { #if already answered, update it
 			my $ans = $self->get_user_answered($user);
 			if($ans) {
-				$ans->update({ option => $option });
+				$ans->update({ options => $option });
 				return $ans;
 			}
 		}
 
 		$self->result_source->schema->resultset('Answer')->create({
-				option => $option,
+				options => $option,
 				user => $user,
-				question => $self->qid,
+				questions => $self->qid,
 			});
 	} elsif($self->type eq 'open-question') {
 		my $response = $_[2];
@@ -63,7 +63,7 @@ sub answer {
 		$self->result_source->schema->resultset('Answer')->create({
 				response => $response,
 				user => $user,
-				question => $self->qid,
+				questions => $self->qid,
 			});
 	} else {
 		warn "unknown type";
@@ -83,7 +83,7 @@ sub stat {
 	if($self->type =~ /-choice$/) {
 		$ret->{options} = {};
 		while(my $option = $options->next) {
-			my $count = $answers->search({option => $option->oid})->count;
+			my $count = $answers->search({options => $option->oid})->count;
 			$ret->{options}->{$option->text} = $count;
 			$sum += $count * $option->point;
 		}
@@ -92,7 +92,7 @@ sub stat {
 		$sum = 0;
 		$options->reset;
 		while(my $option = $options->next) {
-			my $count = $answers->search({option => $option->oid})->count;
+			my $count = $answers->search({options => $option->oid})->count;
 			$ret->{options}->{$option->text} = $count;
 			$sum += $count * (($option->point-$ret->{avg}) ** 2);
 		}

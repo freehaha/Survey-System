@@ -36,7 +36,7 @@ sub add_question {
 
 sub submit {
 	my ($self, $user, $answers) = @_;
-	my @questions = $self->search_related('questions');
+	my @questions = $self->search_related('questions')->all;
 	$answers = decode_json($answers);
 
 	foreach my $question (@questions) {

@@ -154,7 +154,7 @@ sub custom_choice($$%) {
 	my ($sn, $question, %options) = @_;
 	return {
 			sn => $sn,
-			question => $question,
+			questions => $question,
 			type => 'custom-choice',
 			%options
 	};
@@ -164,7 +164,7 @@ sub likert_choice($$%) {
 	my ($sn, $question, %options) = @_;
 	return {
 			sn => $sn,
-			question => $question,
+			questions => $question,
 			type => 'likert-choice',
 			%options
 	};
@@ -174,7 +174,7 @@ sub open_question($$) {
 	my ($sn, $question) = @_;
 	return {
 			sn => $sn,
-			question => $question,
+			questions => $question,
 			type => 'open-question',
 	};
 }

@@ -1,4 +1,8 @@
 #!/bin/sh
 
-rm -f survey.db
-sqlite3 survey.db < surveydb.sql
+mysql -utest -p12345 <<EOF
+drop database test;
+create database test;
+use test;
+source ./surveydb-mysql.sql;
+EOF

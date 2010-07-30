@@ -119,10 +119,49 @@ private template edit_form => sub {
 			};
 			span { '秒' };
 		};
-		show('question_editor', $topic);
+		show('questions_container', $topic->questions);
 		show('condition_editor', $topic);
 	}
 	show('veil');
+};
+
+private template questions_container => sub {
+	my $self = shift;
+	my $questions = shift;
+	div {
+		attr { id => 'qbox' };
+		outs '題目:';
+		while(my $question = $questions->next) {
+			show('question', $question);
+		}
+	}
+};
+
+private template question => sub {
+	my $self = shift;
+	my $question = shift;
+	div {
+		attr { class => 'qbox' };
+		show('qtype', $question);
+		span { $question->questions };
+	};
+};
+
+my %qtype_lookup = (
+	'custom-choice' => '選擇題(自訂)',
+	'likert-choice' => '選擇題',
+	'open-question' => '自由回答',
+);
+private template qtype => sub {
+	my $self = shift;
+	my $question = shift;
+	my $qtype = $question->type;
+	div{
+		attr { class => 'qtype' };
+		span {
+			$qtype_lookup{$qtype};
+		}
+	};
 };
 
 private template veil => sub {
@@ -178,9 +217,16 @@ template question_editor => sub {
 };
 
 template condition_editor => sub {
+	my $self = shift;
+	my $topic = shift;
 	div {
 		attr { id => 'div_condedit' };
-		div { attr { id => 'cond_box', class => 'cond_box' }; };
+		div {
+			attr { id => 'cond_box', class => 'cond_box' };
+			if($topic) {
+				show('conditions', $topic);
+			}
+		};
 		input { attr { id => 'btnNewCondition', type => 'button', value => '新增條件' } };
 		span { '(以逗號區隔)' };
 		script {
@@ -194,6 +240,73 @@ template condition_editor => sub {
 			);'
 		};
 	}
+};
+
+my %cond_types = (
+	user => ['uid', '使用者'],
+	group => ['gid', '群組'],
+	event => ['event', '事件'],
+	query => ['query', '字串'],
+	bot => ['bot', '機器人'],
+	chatroom => ['chatroom', '聊天室'],
+);
+private template conditions => sub {
+	my $self = shift;
+	my $topic = shift;
+	foreach (keys %cond_types) {
+		my $conditions = $topic->search_related_rs('cond_'.$_);
+		my @conds  = ();
+		while(my $condition = $conditions->next) {
+			push @conds, $condition->get_column($cond_types{$_}->[0]);
+		}
+		#TODO: we probably will like to convert uid or gid into names
+		show('condition', $_, @conds) if @conds;
+	}
+};
+
+template condition => sub {
+	my $self = shift;
+	my $cond_type = shift;
+	my @conds = @_;
+	div {
+		attr { ctype => $cond_type, id => 'cbox', class => 'condition' };
+		div {
+			attr { class => 'ctype'};
+			span { $cond_types{$cond_type}->[1] };
+		};
+		input {
+			attr {
+				name => 'cond',
+				type => 'text',
+				origin => join(',', @conds),
+				value => join(',', @conds),
+			};
+		};
+		div {
+			attr { class => 'close' };
+			"X";
+		}
+		input {
+			attr {
+				class => 'btnSubmitChange',
+				type => 'button',
+				value => '確認變更',
+			};
+		};
+	}
+	script {
+		outs_raw '
+		$(".close:last").click(
+			function () {
+				removeCondition($(this).parent());
+			}
+		);
+		$(".btnSubmitChange:last").click(
+			function () {
+				changeCondition($(this).parent());
+			}
+		);'
+	};
 };
 
 private template include_script => sub {

@@ -48,6 +48,19 @@ div.msgbox {
 	-webkit-border-radius:5px;
 	-khtml-border-radius:5px;
 }
+div.msgbox-inline {
+	display: inline;
+	background-color: darkorange;
+	color: white;
+	border:1px solid #AFAFAF;
+	border-radius:5px;
+	padding: 5px;
+	width: 50%;
+	margin-bottom: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius:5px;
+	-khtml-border-radius:5px;
+}
 
 #veil{
 	display: none;
@@ -87,12 +100,24 @@ div.condition {
 	-khtml-border-radius:5px;
 }
 
+div.qbox > span{
+	color: #3333ff;
+}
+div.qtype {
+	width: 85px;
+	display: inline-block;
+}
+div.ctype {
+	width: 85px;
+	display: inline-block;
+}
 .qbox {
 	background-color: #CCCCFF;
 	border:1px solid #AFAFAF;
 	border-radius:5px;
 	padding: 5px;
 	width: 60%;
+	margin-top: 3px;
 	margin-bottom: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius:5px;

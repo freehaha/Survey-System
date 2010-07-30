@@ -174,3 +174,109 @@ function add_form(form) {
 	});
 	return false;
 }
+
+function changeCondition(div)
+{
+	$('#veil').show();
+	var change = {
+		'cmd': 'change_cond',
+		'target': div.attr('ctype'),
+		'origin': div.children('input').attr('origin'),
+		'values': div.children('input').val()
+	};
+	$.ajax({
+		url: location.pathname + '/' + window.JSON.stringify(change),
+		dataType: 'json',
+		success: function(data) {
+			if (data.error) {
+				$('<div>錯誤: ' + data.error + '</div>')
+					.addClass('msgbox-alarm')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
+
+				$('#veil').hide();
+			} else {
+				newdv = $('<div>成功變更</div>')
+				newdv
+					.addClass('msgbox-inline')
+					.appendTo(div)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
+
+				div.children('input').attr('origin', data.origin);
+				$('#veil').hide();
+			}
+		},
+		error: function() {
+			$('<div>執行期發生錯誤, 請聯絡管理員</div>')
+				.addClass('msgbox-alarm')
+				.prependTo(document.body)
+				.delay(3000)
+				.fadeOut(200, function() {
+						$(this).remove();
+					});
+
+			$('#veil').hide();
+		}
+	});
+}
+function removeCondition(div)
+{
+	$('#veil').show();
+	var remove = {
+		'cmd': 'remove_cond',
+		'target': div.attr('ctype'),
+		'values': div.children('input').val()
+	};
+	$.ajax({
+		url: location.pathname + '/' + window.JSON.stringify(remove),
+		dataType: 'json',
+		success: function(data) {
+			if (data.error) {
+				$('<div>錯誤: ' + data.error + '</div>')
+					.addClass('msgbox-alarm')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
+
+				$('#veil').hide();
+			} else {
+				var newdv;
+				if(data.insert) {
+					newdv = $('<div>成功移除篩選條件並補上全域選取條件</div>');
+					$(data.insert).appendTo('#cond_box');
+				} else {
+					newdv = $('<div>成功移除篩選條件</div>')
+				}
+				newdv
+					.addClass('msgbox')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
+
+				div.remove();
+				$('#veil').hide();
+			}
+		},
+		error: function() {
+			$('<div>執行期發生錯誤, 請聯絡管理員</div>')
+				.addClass('msgbox-alarm')
+				.prependTo(document.body)
+				.delay(3000)
+				.fadeOut(200, function() {
+						$(this).remove();
+					});
+
+			$('#veil').hide();
+		}
+	});
+}

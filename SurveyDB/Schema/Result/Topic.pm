@@ -42,6 +42,9 @@ sub submit {
 	foreach my $question (@questions) {
 		$question->answer($user, $answers->{$question->sn});
 	}
+	$self->finished->find_or_create(
+		{ uid => $user, }
+	);
 }
 
 1;

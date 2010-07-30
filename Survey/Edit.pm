@@ -147,7 +147,7 @@ sub change_condition {
 	my $query = shift;
 	my $ctype = $query->{target};
 	my $json = JSON->new->utf8(0);
-	unless($query->{values}) {
+	unless(exists $query->{values}) {
 		$self->write($json->encode({
 			error => '欄位為空'
 		}));

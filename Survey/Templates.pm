@@ -94,11 +94,16 @@ private template edit_form => sub {
 		};
 		div {
 			span {'敘述:' };
-			input { attr{ id=>'desc', name => 'description',  type=>'text' } };
+			input { attr{ id=>'desc', name => 'description',  type=>'text', value => $topic->description } };
 		};
 		div {
 			span {'開始日期:'};
-			show('date_selector', 'begin_date', $topic->get_column('begin_date'));
+			if($topic->finished->count > 0) {
+				use POSIX qw(strftime);
+				span { strftime('%F', localtime($topic->get_column('begin_date'))); };
+			} else {
+				show('date_selector', 'begin_date', $topic->get_column('begin_date'));
+			}
 		};
 		div {
 			span {'結束日期:'};

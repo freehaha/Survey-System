@@ -49,6 +49,7 @@ my $schema = SurveyDB::Schema->connect(
 	'remove_topic' => \&remove_topic,
 	'change_date' => \&change_date,
 	'change_timelimit' => \&change_timelimit,
+	'change_descr' => \&change_descr,
 	'save_questions' => \&save_questions,
 );
 
@@ -362,6 +363,24 @@ sub save_questions {
 	}
 }
 
+sub change_descr {
+	my $self = shift;
+	my $topic = shift;
+	my $query = shift;
+	my $json = JSON->new->utf8(0);
+
+	my $ret = $topic->update(
+		{
+			description => $query->{descr}
+		}
+	);
+	if($ret) {
+		$self->write($json->encode({ success => 'success' }));
+	} else {
+		$self->write($json->encode({ error => 'failed to update description' }));
+	}
+}
+
 sub get {
 	my $self = shift;
 	my $topic = shift;
@@ -376,7 +395,7 @@ sub get {
 
 	my $json = JSON->new->utf8(0);
 	#FIXME: get current user id and check permission here
-	my $query = $json->decode($query);
+	my $query = decode_json($query);
 	if(my $proc =  $cmds{$query->{cmd}}) {
 		$topic = $schema->resultset('Topic')->find(
 			{ topic => $topic },

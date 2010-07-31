@@ -98,6 +98,10 @@ private template edit_form => sub {
 		div {
 			span {'敘述:' };
 			input { attr{ id=>'desc', name => 'description',  type=>'text', value => $topic->description } };
+			input { attr{ id=>'btnSaveDescr', type=>'button', value => '儲存變更' } };
+			script {
+				outs_raw '$("#btnSaveDescr").click(saveDescr);';
+			};
 		};
 		div {
 			span {'開始日期:'};

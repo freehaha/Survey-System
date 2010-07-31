@@ -77,6 +77,7 @@ private template edit_form => sub {
 	my $topic = shift;
 	form {
 		attr {
+			id => 'editform',
 			onsubmit => 'return add_form(this);',
 		};
 		div {
@@ -121,6 +122,23 @@ private template edit_form => sub {
 		};
 		show('questions_container', $topic->questions);
 		show('condition_editor', $topic);
+		div {
+			input {
+				attr {
+					id => 'btnDelete',
+					type => 'button',
+					value => '刪除問卷',
+				}
+			}
+			script {
+				outs_raw '
+				$("#btnDelete").click(
+					function () {
+						deleteTopic();
+					}
+				);';
+			};
+		}
 	}
 	show('veil');
 };

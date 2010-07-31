@@ -46,7 +46,18 @@ my $schema = SurveyDB::Schema->connect(
 %cmds = (
 	'remove_cond' => \&remove_condition,
 	'change_cond' => \&change_condition,
+	'remove_topic' => \&remove_topic,
 );
+
+sub remove_topic {
+	my $self = shift;
+	my $topic = shift;
+	my $query = shift;
+	my $json = JSON->new->utf8(0);
+
+	$topic->delete;
+	$self->write($json->encode({'success', 'success'}));
+}
 
 sub remove_condition {
 	my $self = shift;
@@ -251,13 +262,16 @@ sub get {
 	);
 
 	my $json = JSON->new->utf8(0);
-	#FIXME: get current user id here
+	#FIXME: get current user id and check permission here
 	my $query = $json->decode($query);
 	if(my $proc =  $cmds{$query->{cmd}}) {
 		$topic = $schema->resultset('Topic')->find(
 			{ topic => $topic },
 		);
-		return $proc->($self, $topic, $query);
+		$schema->txn_begin;
+		my $ret = $proc->($self, $topic, $query);
+		$schema->txn_commit;
+		return $ret;
 	} else {
 		$self->write($json->encode({'error' => 'undefined command'}));
 		return;

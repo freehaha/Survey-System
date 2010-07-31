@@ -154,6 +154,7 @@ function add_form(form) {
 					.delay(3000)
 					.fadeOut(200, function() {
 							$(this).remove();
+							/* FIXME: use relative path ? */
 							location = '/add';
 						});
 				$('#veil').hide();
@@ -185,6 +186,7 @@ function changeCondition(div)
 		'values': div.children('input').val()
 	};
 	$.ajax({
+		/* FIXME: use relative path ? */
 		url: location.pathname + '/' + window.JSON.stringify(change),
 		dataType: 'json',
 		success: function(data) {
@@ -234,6 +236,7 @@ function removeCondition(div)
 		'values': div.children('input').val()
 	};
 	$.ajax({
+		/* FIXME: use relative path ? */
 		url: location.pathname + '/' + window.JSON.stringify(remove),
 		dataType: 'json',
 		success: function(data) {
@@ -277,6 +280,58 @@ function removeCondition(div)
 					});
 
 			$('#veil').hide();
+		}
+	});
+}
+function deleteTopic()
+{
+	var del = {
+		'cmd': 'remove_topic'
+	};
+	$('#btnDelete').attr('disabled', 'disabled');
+	$.ajax({
+		/* FIXME: use relative path ? */
+		url: location.pathname + '/' + window.JSON.stringify(del),
+		dataType: 'json',
+		success: function(data) {
+			if (data.error) {
+				$('<div>錯誤: ' + data.error + '</div>')
+					.addClass('msgbox-alarm')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
+
+				$('#veil').hide();
+				$('#btnDelete').removeAttr('disabled');
+			} else {
+				var newdv = $('<div>成功移除問卷, 將在三秒後返回選問卷列表</div>')
+				newdv
+					.addClass('msgbox')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+							/* FIXME: use relative path ? */
+							location = '/list';
+						});
+
+				$('#editform').remove();
+				$('#veil').hide();
+			}
+		},
+		error: function() {
+			$('<div>執行期發生錯誤, 請聯絡管理員</div>')
+				.addClass('msgbox-alarm')
+				.prependTo(document.body)
+				.delay(3000)
+				.fadeOut(200, function() {
+						$(this).remove();
+					});
+
+			$('#veil').hide();
+			$('#btnDelete').removeAttr('disabled');
 		}
 	});
 }

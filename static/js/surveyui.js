@@ -1,3 +1,35 @@
+function add_question_set(questions)
+{
+	$(document).ready(function () {
+		for (var i = 0; i < questions.length; ++i) {
+			count++;
+			add_question(count);
+			$('#qb_'+count+' input:first').val(questions[i].questions);
+			var index = 0;
+			switch(questions[i].type) {
+				case 'likert-choice':
+					$('#s_'+count)[0].selectedIndex = 0;
+					$('#s_'+count).change();
+					$('#s_lkt_'+count)[0].selectedIndex = questions[i].options.length-2;
+					break;
+				case 'custom-choice':
+					$('#s_'+count)[0].selectedIndex = 1;
+					$('#s_'+count).change();
+					$("#options_"+count).empty();
+					for(var j = 0; j < questions[i].options.length; ++j) {
+						var opt = new_option(count);
+						opt.children('select')[0].selectedIndex = questions[i].options[j].point-1;
+						opt.children('input').val(questions[i].options[j].text);
+					}
+					break;
+				case 'open-question':
+					$('#s_'+count)[0].selectedIndex = 2;
+					$('#s_'+count).change();
+					break;
+			}
+		}
+	});
+}
 function add_question(count)
 {
 	$("#qbox").append(new_question_box(count));
@@ -46,7 +78,7 @@ function change_type(count)
 	$("#qb_"+count+"_inner").empty();
 	switch(v) {
 		case 'likert-choice': /* likert-style options */
-			$('#qb_'+count+'_inner').append(likert_options());
+			$('#qb_'+count+'_inner').append(likert_options(count));
 			$('#s_lkt_'+count).change(
 				function() {
 				}
@@ -77,7 +109,7 @@ function new_option(count)
 	}
 	text += '</select>';
 	text += '<input class="option" name="option" /></div>';
-	$("#options_"+count).append(text);
+	return $(text).appendTo('#options_'+count);
 }
 
 function rm_option(count)
@@ -431,4 +463,79 @@ function changeTime(input)
 			$('#veil').hide();
 		}
 	});
+}
+function saveQuestions() {
+	$('#btnSaveQuestion').attr('disabled', 'disabled');
+	$('#veil').show();
+	var questions = new Array;
+	var i = 0;
+	$('.qbox').each(function(index, elem) {
+		questions[i] = new Object;
+		questions[i].type = $(this).children('.type_sel').val();
+		switch(questions[i].type) {
+		case 'likert-choice':
+			questions[i].num = $(this).children('div:last').children('select').val();
+			break;
+		case 'custom-choice':
+			var op_container = $(this).children('div:last').children('div:last');
+			var j = 0;
+			questions[i].options = new Array();
+			op_container.children('div').each(function(index, elem) {
+				var option = new Object;
+				option.pt = $(this).children('select').val();
+				option.text = $(this).children('input').val();
+				questions[i].options[j] = option;
+				j++;
+			});
+			break;
+		case 'open-question':
+			break;
+		}
+		questions[i].question = $(this).children('input').val();
+		i++;
+	});
+	var save = {
+		'cmd': 'save_questions',
+		'questions': questions
+	};
+	$.ajax({
+		url: location.pathname + '/' + window.JSON.stringify(save),
+		dataType: 'json',
+		success: function(data) {
+			if (data.error) {
+				$('<div>錯誤: ' + data.error + '</div>')
+					.addClass('msgbox-alarm')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
+
+				$('#veil').hide();
+				$('#btnSaveQuestion').removeAttr('disabled');
+			} else {
+				$('<div>儲存成功</div>')
+					.addClass('msgbox')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
+				$('#veil').hide();
+			}
+		},
+		error: function() {
+			$('<div>執行期發生錯誤, 請聯絡管理員</div>')
+				.addClass('msgbox-alarm')
+				.prependTo(document.body)
+				.delay(3000)
+				.fadeOut(200, function() {
+						$(this).remove();
+					});
+
+			$('#veil').hide();
+			$('#btnSaveQuestion').removeAttr('disabled');
+		}
+	});
+	return false;
 }

@@ -94,7 +94,7 @@ sub get {
 						$pt = $q->{value};
 						$q = $query->[++$i];
 						$option = $q->{value};
-						push @options, $pt, $option;
+						push @options, $option, $pt;
 					} else {
 						$i--;
 						last;

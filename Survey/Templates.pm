@@ -3,6 +3,8 @@ package Survey::Templates;
 use utf8;
 use Template::Declare::Tags;
 use base 'Template::Declare';
+use strict;
+use warnings;
 
 private template 'util/header' => sub {
 	my $self = shift;
@@ -74,7 +76,8 @@ private template add_form => sub {
 
 private template edit_form => sub {
 	my $self = shift;
-	my $topic = shift;
+	my $topic = shift || die 'no topic specified';
+	my $already_answered = $topic->finished->count;
 	form {
 		attr {
 			id => 'editform',
@@ -98,7 +101,7 @@ private template edit_form => sub {
 		};
 		div {
 			span {'開始日期:'};
-			if($topic->finished->count > 0) {
+			if($already_answered) {
 				use POSIX qw(strftime);
 				span { strftime('%F', localtime($topic->get_column('begin_date'))); };
 			} else {
@@ -110,7 +113,7 @@ private template edit_form => sub {
 			show('date_selector', 'close_date', $topic->get_column('close_date'));
 		};
 		div {
-			my $tl = $topic->timelimit;
+			my $tl = $topic->timelimit || 0;
 			span {'作答時間:'};
 			select {
 				attr { id => 'tl_min', name => 'tl_min', class => 'timeselect' };
@@ -138,7 +141,11 @@ private template edit_form => sub {
 				});
 			';
 		};
-		show('questions_container', $topic->questions);
+		if($already_answered) {
+			show('questions_container', $topic->questions);
+		} else {
+			show('question_editor', $topic->questions);
+		}
 		show('condition_editor', $topic);
 		div {
 			input {
@@ -235,10 +242,37 @@ template date_selector => sub {
 };
 
 template question_editor => sub {
+	use JSON;
+	my $json = JSON->new->utf8(0);
+	my $self = shift;
+	my $questions = shift;
 	div {
 		attr { id => 'div_qedit' };
-		div { attr { id => 'qbox' }; }
+		div {
+			attr { id => 'qbox' };
+			if($questions) {
+				use DBIx::Class::ResultClass::HashRefInflator;
+				$questions = $questions->search_rs({}, { order_by => {-asc => 'sn'}, prefetch => 'options' });
+				$questions->result_class('DBIx::Class::ResultClass::HashRefInflator');
+				script {
+					outs_raw 'add_question_set('
+					.$json->encode([$questions->all])
+					.');';
+				}
+			}
+		};
 		input { attr { id => 'btnNewQuestion', type => 'button', value => '新增問題' } };
+		if($questions) {
+			input { attr { id => 'btnSaveQuestion', type => 'button', value => '儲存變更' } };
+			script {
+				outs_raw '
+				$("#btnSaveQuestion").click(
+					function() {
+						saveQuestions();
+					}
+				);'
+			}
+		}
 		script {
 			outs_raw '
 			var count = 0;
@@ -276,6 +310,53 @@ template condition_editor => sub {
 			);'
 		};
 	}
+};
+
+private template custom_options => sub {
+	input {
+		attr {
+			class => 'btn_add',
+			type => 'button',
+			value => '新增選項',
+		};
+	};
+	input {
+		attr {
+			class => 'btn_rm',
+			type => 'button',
+			value => '減少選項',
+		};
+	};
+	div {
+		attr { class => 'option_box' };
+		div {
+			attr { class => 'option' };
+			select {
+				attr { name => 'pt' };
+				foreach my $pt (1..20) {
+					option {
+						attr { value => $pt };
+						$pt;
+					}
+				}
+			};
+			input {
+				attr { class => 'option', name => 'option' };
+			};
+		};
+	};
+};
+private template likert_options => sub {
+	span { '選項數目: ' };
+	select {
+		attr { name => 'lkt' };
+		foreach my $i (2..9) {
+			option {
+				attr { value => $i };
+				$i;
+			};
+		}
+	};
 };
 
 my %cond_types = (

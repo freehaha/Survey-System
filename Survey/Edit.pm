@@ -49,6 +49,7 @@ my $schema = SurveyDB::Schema->connect(
 	'remove_topic' => \&remove_topic,
 	'change_date' => \&change_date,
 	'change_timelimit' => \&change_timelimit,
+	'save_questions' => \&save_questions,
 );
 
 sub remove_topic {
@@ -287,6 +288,77 @@ sub change_timelimit {
 		$self->write($json->encode({ success => 'success' }));
 	} else {
 		$self->write($json->encode({error => '系統發生問題'}));
+	}
+}
+
+sub save_questions {
+	my $self = shift;
+	my $topic = shift;
+	my $query = shift;
+	my $json = JSON->new->utf8(0);
+
+	my $questions = $query->{questions};
+	my $error = '';
+	my $sn = 0;
+	$topic->questions->delete;
+	QES: foreach my $question (@$questions) {
+		unless($question->{question}) {
+			$error .= 'empty question';
+			next;
+		}
+		my $qtype = $question->{type};
+		if($qtype eq 'likert-choice') {
+			unless($question->{num}) {
+				$error .= 'invalid likert type<br>';
+				next;
+			}
+			if(not $topic->questions->create(
+					likert_choice($sn, $question->{question}, options($question->{num}))
+				)){
+				$error .= 'failed to create some question<br>';
+				next;
+			}
+			$sn++;
+		} elsif($qtype eq 'custom-choice') {
+			unless($question->{options}) {
+				$error .= 'missing options<br>';
+				next;
+			}
+			my @options = ();
+			foreach my $option (@{$question->{options}}) {
+				unless($option->{text}) {
+					$error .= 'options missing texts<br>';
+					next QES;
+				}
+				push @options, $option->{text}, $option->{pt};
+			}
+			unless(@options) {
+				$error .= 'missing options<br>';
+				next;
+			}
+			if(not $topic->questions->create(
+					custom_choice($sn, $question->{question}, custom_options(@options))
+				)){
+				$error .= 'failed to create some question<br>';
+				next;
+			}
+			$sn++;
+		} elsif($qtype eq 'open-question') {
+			if(not $topic->questions->create(
+					open_question($sn, $question->{question})
+				)){
+				$error .= 'failed to create some question<br>';
+				next;
+			}
+			$sn++;
+		} else {
+			$error .= 'unknown type<br>';
+		}
+	}
+	if($error) {
+		$self->write($json->encode({ error => $error }));
+	} else {
+		$self->write($json->encode({ success => 'success' }));
 	}
 }
 

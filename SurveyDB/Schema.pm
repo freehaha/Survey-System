@@ -33,6 +33,24 @@ __PACKAGE__->load_namespaces(
 	default_resultset_class => 'ResultSet',
 );
 
+sub connect_surveydb {
+	use YAML::XS;
+	my $pkg = shift;
+	my $path = shift || 'etc/config.yml';
+	my $config = do {
+		open F, $path;
+		local $/;
+		my $ret = <F>;
+		close F;
+		$ret;
+	};
+	$config = Load $config;
+	return SurveyDB::Schema->connect(
+		'dbi:mysql:dbname='.$config->{database},
+		$config->{db_user}, $config->{db_password},
+		{ mysql_enable_utf8 => 1}
+	);
+}
 sub add_topic {
 	my ($self, $topic) = @_;
 	die 'not a hash ref' unless ref($topic) eq 'HASH';

@@ -289,6 +289,7 @@ my %cond_types = (
 private template conditions => sub {
 	my $self = shift;
 	my $topic = shift;
+	span { '施測對象:' };
 	foreach (keys %cond_types) {
 		my $conditions = $topic->search_related_rs('cond_'.$_);
 		my @conds  = ();

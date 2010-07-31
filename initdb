@@ -1,9 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 
-mysql -utest -p12345 <<EOF
+if [ "$1" == "new" ]
+then
+	mysql -utest -p12345 <<EOF
+create database test default character set utf8 collate utf8_unicode_ci;
+set names utf8;
+use test;
+source ./surveydb-mysql.sql;
+EOF
+else
+	mysql -utest -p12345 <<EOF
 drop database test;
 create database test default character set utf8 collate utf8_unicode_ci;
 set names utf8;
 use test;
 source ./surveydb-mysql.sql;
 EOF
+fi

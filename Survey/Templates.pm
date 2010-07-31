@@ -109,7 +109,7 @@ private template edit_form => sub {
 			span {'作答時間:'};
 			select {
 				attr { name => 'tl_min' };
-				option { $tl / 60 };
+				option { int($tl / 60) };
 				option { $_ } for (0..60);
 			};
 			span { '分' };

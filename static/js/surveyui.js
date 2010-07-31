@@ -335,3 +335,51 @@ function deleteTopic()
 		}
 	});
 }
+function changeDate(input)
+{
+	var chg = {
+		'cmd': 'change_date',
+		'target': input.attr('name'),
+		'value': input.val()
+	};
+	$.ajax({
+		/* FIXME: use relative path ? */
+		url: location.pathname + '/' + window.JSON.stringify(chg),
+		dataType: 'json',
+		success: function(data) {
+			if (data.error) {
+				$('<div>錯誤: ' + data.error + '</div>')
+					.addClass('msgbox-alarm')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
+
+				$('#veil').hide();
+			} else {
+				var newdv = $('<div>變更完成</div>')
+				newdv
+					.addClass('msgbox-inline')
+					.appendTo(input.parent())
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
+
+				$('#veil').hide();
+			}
+		},
+		error: function() {
+			$('<div>執行期發生錯誤, 請聯絡管理員</div>')
+				.addClass('msgbox-alarm')
+				.prependTo(document.body)
+				.delay(3000)
+				.fadeOut(200, function() {
+						$(this).remove();
+					});
+
+			$('#veil').hide();
+		}
+	});
+}

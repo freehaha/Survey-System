@@ -47,6 +47,7 @@ my $schema = SurveyDB::Schema->connect(
 	'remove_cond' => \&remove_condition,
 	'change_cond' => \&change_condition,
 	'remove_topic' => \&remove_topic,
+	'change_date' => \&change_date,
 );
 
 sub remove_topic {
@@ -247,6 +248,28 @@ sub change_condition {
 	} else {
 		$self->write($json->encode({'error' => 'unknown condition type'}));
 	}
+}
+
+sub change_date {
+	my $self = shift;
+	my $topic = shift;
+	my $query = shift;
+	my $json = JSON->new->utf8(0);
+
+	unless($query->{target} eq 'begin_date'
+		|| $query->{target} eq 'close_date') {
+		$self->write($json->encode({error => '日期格式錯誤'}));
+		return;
+	}
+	my @date = split '-', $query->{value}; #yy-mm-dd
+	if(scalar(@date) < 3) {
+		$self->write($json->encode({error => '日期格式錯誤'}));
+		return;
+	}
+	$topic->update(
+		{ $query->{target} => timelocal(0, 0, 0, $date[2], $date[1]-1, $date[0]) }
+	);
+	$self->write($json->encode({ success => 'success' }));
 }
 
 sub get {

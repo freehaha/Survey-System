@@ -113,17 +113,27 @@ private template edit_form => sub {
 			my $tl = $topic->timelimit;
 			span {'作答時間:'};
 			select {
-				attr { name => 'tl_min' };
+				attr { id => 'tl_min', name => 'tl_min' };
 				option { int($tl / 60) };
 				option { $_ } for (0..60);
 			};
 			span { '分' };
 			select {
-				attr { name => 'tl_sec' };
+				attr { id => 'tl_sec', name => 'tl_sec' };
 				option { $tl % 60 };
 				option { $_ } for (0..60);
 			};
 			span { '秒' };
+		};
+		script {
+			outs_raw '
+				$("#begin_date").change(function() {
+					changeDate($(this));
+				});
+				$("#close_date").change(function() {
+					changeDate($(this));
+				});
+			';
 		};
 		show('questions_container', $topic->questions);
 		show('condition_editor', $topic);

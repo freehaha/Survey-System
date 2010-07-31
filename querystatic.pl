@@ -5,12 +5,7 @@ use SurveyDB::Schema;
 use utf8;
 use strict;
 
-my ($dbuser, $dbpwd) = ('test', '12345');
-my $schema = SurveyDB::Schema->connect(
-	'dbi:mysql:dbname=test',
-	$dbuser, $dbpwd,
-	{ mysql_enable_utf8 => 1}
-);
+my $schema = SurveyDB::Schema->connect_surveydb('etc/config.yml');
 
 #get the topic where topic=1
 my $t = $schema->resultset('Topic')->find(

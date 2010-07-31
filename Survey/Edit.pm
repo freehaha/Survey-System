@@ -8,12 +8,7 @@ Template::Declare->init( dispatch_to => ['Survey::Templates'] );
 sub get {
 	my $self = shift;
 	my $query = shift;
-	my ($dbuser, $dbpwd) = ('test', '12345');
-	my $schema = SurveyDB::Schema->connect(
-		'dbi:mysql:dbname=test',
-		$dbuser, $dbpwd,
-		{ mysql_enable_utf8 => 1}
-	);
+	my $schema = SurveyDB::Schema->connect_surveydb('etc/config.yml');
 	my $topic = $schema->resultset('Topic')->search(
 		{
 			topic => $query,
@@ -37,12 +32,7 @@ use Survey::Templates;
 use Time::Local;
 Template::Declare->init( dispatch_to => ['Survey::Templates'] );
 
-my ($dbuser, $dbpwd) = ('test', '12345');
-my $schema = SurveyDB::Schema->connect(
-	'dbi:mysql:dbname=test',
-	$dbuser, $dbpwd,
-	{ mysql_enable_utf8 => 1}
-);
+my $schema = SurveyDB::Schema->connect_surveydb('etc/config.yml');
 %cmds = (
 	'remove_cond' => \&remove_condition,
 	'change_cond' => \&change_condition,
@@ -386,12 +376,7 @@ sub get {
 	my $topic = shift;
 	my $query = shift;
 
-	my ($dbuser, $dbpwd) = ('test', '12345');
-	my $schema = SurveyDB::Schema->connect(
-		'dbi:mysql:dbname=test',
-		$dbuser, $dbpwd,
-		{ mysql_enable_utf8 => 1}
-	);
+	my $schema = SurveyDB::Schema->connect_surveydb('etc/config.yml');
 
 	my $json = JSON->new->utf8(0);
 	#FIXME: get current user id and check permission here

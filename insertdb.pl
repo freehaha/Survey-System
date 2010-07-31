@@ -8,7 +8,6 @@ use strict;
 
 my $path = dirname $0;
 chdir $path;
-my ($dbuser, $dbpwd) = ('test', '12345');
 my $schema = SurveyDB::Schema->connect_surveydb('etc/config.yml');
 
 $schema->txn_begin;

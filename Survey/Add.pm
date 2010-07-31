@@ -18,12 +18,7 @@ use utf8;
 use SurveyDB::Schema;
 use Time::Local;
 
-my ($dbuser, $dbpwd) = ('test', '12345');
-my $schema = SurveyDB::Schema->connect(
-	'dbi:mysql:dbname=test',
-	$dbuser, $dbpwd,
-	{ mysql_enable_utf8 => 1}
-);
+my $schema = SurveyDB::Schema->connect_surveydb('etc/config.yml');
 my %cond_dp = (
 	user => \&cond_user,
 	group => \&cond_group,
@@ -128,12 +123,7 @@ sub get {
 		$self->write($json->encode({error => '沒有提供任何題目'}));
 		return;
 	}
-	my ($dbuser, $dbpwd) = ('test', '12345');
-	my $schema = SurveyDB::Schema->connect(
-		'dbi:mysql:dbname=test',
-		$dbuser, $dbpwd,
-		{ mysql_enable_utf8 => 1}
-	);
+	my $schema = SurveyDB::Schema->connect_surveydb('etc/config.yml');
 	$topic = $schema->add_topic($topic);
 	$self->write(encode_json({'success' => $topic->topic}));
 }

@@ -48,6 +48,7 @@ my $schema = SurveyDB::Schema->connect(
 	'change_cond' => \&change_condition,
 	'remove_topic' => \&remove_topic,
 	'change_date' => \&change_date,
+	'change_timelimit' => \&change_timelimit,
 );
 
 sub remove_topic {
@@ -270,6 +271,23 @@ sub change_date {
 		{ $query->{target} => timelocal(0, 0, 0, $date[2], $date[1]-1, $date[0]) }
 	);
 	$self->write($json->encode({ success => 'success' }));
+}
+
+sub change_timelimit {
+	my $self = shift;
+	my $topic = shift;
+	my $query = shift;
+	my $json = JSON->new->utf8(0);
+
+	if($topic->update(
+			{
+				timelimit => $query->{value}
+			}
+		)){
+		$self->write($json->encode({ success => 'success' }));
+	} else {
+		$self->write($json->encode({error => '系統發生問題'}));
+	}
 }
 
 sub get {

@@ -113,15 +113,15 @@ private template edit_form => sub {
 			my $tl = $topic->timelimit;
 			span {'作答時間:'};
 			select {
-				attr { id => 'tl_min', name => 'tl_min' };
-				option { int($tl / 60) };
-				option { $_ } for (0..60);
+				attr { id => 'tl_min', name => 'tl_min', class => 'timeselect' };
+				option { attr { value => int($tl / 60) }; int($tl / 60); };
+				option { attr { value => $_ }; $_ } for (0..60);
 			};
 			span { '分' };
 			select {
-				attr { id => 'tl_sec', name => 'tl_sec' };
-				option { $tl % 60 };
-				option { $_ } for (0..60);
+				attr { id => 'tl_sec', name => 'tl_sec', class => 'timeselect' };
+				option { attr { value => $tl % 60 }; $tl % 60; };
+				option { attr { value => $_ }; $_ } for (0..60);
 			};
 			span { '秒' };
 		};
@@ -132,6 +132,9 @@ private template edit_form => sub {
 				});
 				$("#close_date").change(function() {
 					changeDate($(this));
+				});
+				$(".timeselect").change(function() {
+					changeTime($(this));
 				});
 			';
 		};

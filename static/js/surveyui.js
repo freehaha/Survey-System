@@ -582,3 +582,56 @@ function saveDescr()
 		}
 	});
 }
+function listEditTopic(div)
+{
+	var topic = div.attr('topic');
+	location = '../edit/' + topic;
+
+}
+function listDeleteTopic(div)
+{
+	var topic = div.attr('topic');
+	var del = {
+		'cmd': 'remove_topic'
+	};
+	$('#veil').show();
+	$.ajax({
+		url: '../edit/' + topic + '/' + window.JSON.stringify(del),
+		dataType: 'json',
+		success: function(data) {
+			if (data.error) {
+				$('<div>錯誤: ' + data.error + '</div>')
+					.addClass('msgbox-alarm')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
+
+				$('#veil').hide();
+			} else {
+				var newdv = $('<div>成功移除問卷</div>')
+				newdv
+					.addClass('msgbox')
+					.prependTo(document.body)
+					.delay(3000)
+					.fadeOut(200, function() {
+							$(this).remove();
+						});
+
+				$('#veil').hide();
+			}
+		},
+		error: function() {
+			$('<div>執行期發生錯誤, 請聯絡管理員</div>')
+				.addClass('msgbox-alarm')
+				.prependTo(document.body)
+				.delay(3000)
+				.fadeOut(200, function() {
+						$(this).remove();
+					});
+
+			$('#veil').hide();
+		}
+	});
+}

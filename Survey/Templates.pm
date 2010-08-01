@@ -509,3 +509,66 @@ template edit => sub {
 		};
 	}
 };
+
+template list => sub {
+	my $self = shift;
+	my $topics = shift;
+	html {
+		head {
+			title { '問卷列表' };
+			meta  {
+				attr { content => "text/html; charset=utf-8" }
+				attr { 'http-equiv' => "content-type" }
+			}
+			show('import_css', '/static/css/form.css');
+			show('include_script', '/static/js/jquery-1.4.2.min.js');
+			show('include_script', '/static/js/jquery-ui-1.8.2.custom.min.js');
+			show('include_script', '/static/js/surveyui.js');
+		}
+		body {
+			div {
+				attr { id => 'topiclist_container' };
+				while(my $topic = $topics->next) {
+					show('topic_item', $topic);
+				}
+			}
+			script {
+				outs_raw '
+					$(".btnDel").click(function() {
+						listDeleteTopic($(this).parent());
+					});
+					$(".btnEdit").click(function() {
+						listEditTopic($(this).parent());
+					});
+				';
+			};
+		};
+	}
+};
+
+private template topic_item => sub {
+	my $self = shift;
+	my $topic = shift;
+	div {
+		attr {
+			class => 'topic-item',
+			topic => $topic->topic
+		};
+		input {
+			attr {
+				class => 'btnEdit',
+				type => 'button',
+				value => '編輯'
+			};
+		};
+		input {
+			attr {
+				class => 'btnDel',
+				type => 'button',
+				value => '刪除'
+			};
+		};
+		span { '編號: '.$topic->topic };
+		span { '標題: '.$topic->title };
+	};
+};

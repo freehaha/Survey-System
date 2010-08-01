@@ -7,12 +7,14 @@ use Tatsumaki::Server;
 package main;
 use Survey::Add;
 use Survey::Edit;
+use Survey::List;
 
 my $app = Tatsumaki::Application->new([
 	'/add/(\S.*)' => 'Survey::AddTopic',
 	'/add' => 'Survey::Add',
 	'/edit/(\d+)$' => 'Survey::Edit',
 	'/edit/(\d+)/(\S.*)$' => 'Survey::EditTopic',
+	'/list' => 'Survey::List',
 	]);
 
 use Plack::Builder;

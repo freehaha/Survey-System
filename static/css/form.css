@@ -126,3 +126,7 @@ div.ctype {
 #formbtns {
 	margin-top: 10px;
 }
+
+#topiclist_container div {
+	margin: 5px;
+}

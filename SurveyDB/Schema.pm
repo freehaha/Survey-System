@@ -53,10 +53,11 @@ sub connect_surveydb {
 }
 sub add_topic {
 	my ($self, $topic) = @_;
+	use DateTime;
 	die 'not a hash ref' unless ref($topic) eq 'HASH';
 
 	my $ret = $self->resultset('Topic')->create({
-		begin_date => time(),
+		begin_date => DateTime->now(),
 		cond_user(0),
 		cond_group(0),
 		cond_bot('all'),

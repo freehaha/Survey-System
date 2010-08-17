@@ -49,13 +49,21 @@ sub get {
 		} elsif ($key eq 'description') {
 			$topic->{description} = $q->{value};
 		} elsif ($key eq 'begin_date' || $key eq 'close_date') {
-			my @date = split '-', $q->{value}; #yy-mm-dd
-			if(scalar(@date) < 3) {
+			use DateTime::Format::ISO8601;
+			my $dt;
+			eval {
+				my $qhr = $query->[$i+1];
+				my $qmin = $query->[$i+2];
+
+				my $str = sprintf "%sT%02d:%02d:00", $q->{value}, $qhr->{value}, $qmin->{value};
+				$dt = DateTime::Format::ISO8601->parse_datetime($str);
+			};
+			if($@) {
 				$self->write($json->encode({error => '日期格式錯誤'}));
 				return;
 			}
-			$topic->{$key} = 
-				timelocal(0, 0, 0, $date[2], $date[1]-1, $date[0]);
+			$topic->{$key} = $dt;
+			$i += 2;
 		} elsif($key eq 'tl_min') {
 			my $min = $q->{value};
 			$i++;

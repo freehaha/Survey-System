@@ -43,12 +43,12 @@ private template add_form => sub {
 			input { attr{ id=>'desc', name => 'description',  type=>'text' } };
 		};
 		div {
-			span {'開始日期:'};
-			show('date_selector', 'begin_date');
+			span {'開始時間:'};
+			show('datetime_selector', 'begin_date');
 		};
 		div {
-			span {'結束日期:'};
-			show('date_selector', 'close_date');
+			span {'結束時間:'};
+			show('datetime_selector', 'close_date');
 		};
 		div {
 			span {'作答時間:'};
@@ -107,14 +107,14 @@ private template edit_form => sub {
 			span {'開始日期:'};
 			if($already_answered) {
 				use POSIX qw(strftime);
-				span { strftime('%F', localtime($topic->get_column('begin_date'))); };
+				span { $topic->get_column('begin_date'); };
 			} else {
-				show('date_selector', 'begin_date', $topic->get_column('begin_date'));
+				show('datetime_selector', 'begin_date', $topic->begin_date);
 			}
 		};
 		div {
 			span {'結束日期:'};
-			show('date_selector', 'close_date', $topic->get_column('close_date'));
+			show('datetime_selector', 'close_date', $topic->close_date);
 		};
 		div {
 			my $tl = $topic->timelimit || 0;
@@ -138,6 +138,12 @@ private template edit_form => sub {
 					changeDate($(this));
 				});
 				$("#close_date").change(function() {
+					changeDate($(this));
+				});
+				$(".dp_hr").change(function() {
+					changeDate($(this));
+				});
+				$(".dp_min").change(function() {
 					changeDate($(this));
 				});
 				$(".timeselect").change(function() {
@@ -224,24 +230,44 @@ private template veil => sub {
 	}
 };
 
-template date_selector => sub {
+template datetime_selector => sub {
 	my $self = shift;
-	my $id = shift || die 'no id supplied for date_selector';
+	my $id = shift || die 'no id supplied for datetime_selector';
 	my $default = shift;
 	use POSIX qw(strftime);
-	if($default) {
-		$default = strftime '%F', localtime($default);
-	}
 
-	input {
-		attr {
-			id => $id, name => $id, type => 'text',
-			value => $default
+	div {
+		attr { class => 'datetime_selector' };
+		input {
+			attr {
+				id => $id, name => $id, type => 'text',
+			};
+			if($default) {
+				attr {
+					value => sprintf "%s-%02d-%02d", $default->year, $default->month, $default->day
+				};
+			}
 		}
-	}
-	script { attr { type => 'text/javascript' }
-		outs_raw '$("#'.$id.'").datepicker(
-		{ dateFormat: \'yy-mm-dd\' });';
+		script { attr { type => 'text/javascript' }
+			outs_raw '$("#'.$id.'").datepicker(
+			{ dateFormat: \'yy-mm-dd\' });';
+		}
+		select {
+			attr { class => 'dp_hr', name => 'dp_hr' };
+			if($default) {
+				option { $default->hour };
+			}
+			option { $_ } for (0..23);
+		};
+		span { '點' };
+		select {
+			attr { class => 'dp_min', name => 'dp_min' };
+			if($default) {
+				option { $default->minute };
+			}
+			option { $_ } for (0..60);
+		};
+		span { '分' };
 	}
 };
 
@@ -271,9 +297,9 @@ template question_editor => sub {
 			script {
 				outs_raw '
 				$("#btnSaveQuestion").click(
-					function() {
-						saveQuestions();
-					}
+				function() {
+				saveQuestions();
+				}
 				);'
 			}
 		}
@@ -281,10 +307,10 @@ template question_editor => sub {
 			outs_raw '
 			var count = 0;
 			$("#btnNewQuestion").click(
-				function() {
-					count++;
-					add_question(count);
-				}
+			function() {
+			count++;
+			add_question(count);
+			}
 			);'
 		}
 	}
@@ -307,10 +333,10 @@ template condition_editor => sub {
 			outs_raw '
 			var c_count = 0;
 			$("#btnNewCondition").click(
-				function() {
-					c_count++;
-					add_condition(c_count);
-				}
+			function() {
+			c_count++;
+			add_condition(c_count);
+			}
 			);'
 		};
 	}
@@ -371,6 +397,7 @@ my %cond_types = (
 	bot => ['bot', '機器人'],
 	chatroom => ['chatroom', '聊天室'],
 );
+
 private template conditions => sub {
 	my $self = shift;
 	my $topic = shift;

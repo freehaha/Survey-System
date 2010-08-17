@@ -19,8 +19,8 @@ create table topic (
 	timelimit integer,
 	title varchar(120) NOT NULL,
 	description varchar(240), 
-	begin_date integer,
-	close_date integer
+	begin_date datetime,
+	close_date datetime
 );
 
 create table questions (

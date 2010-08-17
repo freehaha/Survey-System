@@ -369,10 +369,13 @@ function deleteTopic()
 }
 function changeDate(input)
 {
+	var prt = input.parent();
 	var chg = {
 		'cmd': 'change_date',
-		'target': input.attr('name'),
-		'value': input.val()
+		'target': prt.children('input:first').attr('name'),
+		'date': prt.children('input:first').val(),
+		'hour': prt.children('.dp_hr').val(),
+		'minute': prt.children('.dp_min').val()
 	};
 	$.ajax({
 		/* FIXME: use relative path ? */

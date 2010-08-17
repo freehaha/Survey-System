@@ -15,8 +15,8 @@ $schema->add_topic({
 	title => 'test survey',
 	description => 'a survey for test',
 	creator => 1,
-	begin_date => timelocal(0,0,0,28,6,2010),
-	close_date => timelocal(0,0,0,30,6,2010),
+	begin_date => DateTime->new(year => 2010, month => 8, day => 28, hour => 15),
+	close_date => DateTime->new(year => 2010, month => 9, day => 30, hour => 10),
 	questions => [
 		custom_choice(1, 'q1', custom_options qw/option1 1 option2 3/),
 		likert_choice(2, 'q2', options 2),
@@ -32,8 +32,8 @@ $schema->add_topic({
 	title => 'test survey 2',
 	description => 'something',
 	creator => 2,
-	begin_date => timelocal(0,0,0,1,6,2010),
-	close_date => timelocal(0,0,0,30,7,2010),
+	begin_date => DateTime->new(year => 2010, month => 9, day => 28),
+	close_date => DateTime->new(year => 2010, month => 10, day => 30),
 	questions => [
 		likert_choice(1, 'q2', options 2),
 		likert_choice(2, 'q2', options 2),

@@ -130,3 +130,7 @@ div.ctype {
 #topiclist_container div {
 	margin: 5px;
 }
+
+div.datetime_selector {
+	display: inline-block;
+}

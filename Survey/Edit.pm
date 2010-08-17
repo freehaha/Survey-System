@@ -254,13 +254,20 @@ sub change_date {
 		$self->write($json->encode({error => '日期格式錯誤'}));
 		return;
 	}
-	my @date = split '-', $query->{value}; #yy-mm-dd
-	if(scalar(@date) < 3) {
+
+	use DateTime::Format::ISO8601;
+	my $dt;
+	eval {
+		my $str = sprintf "%sT%02d:%02d:00", $query->{date}, $query->{hour}, $query->{minute};
+		$dt = DateTime::Format::ISO8601->parse_datetime($str);
+	};
+	if($@) {
 		$self->write($json->encode({error => '日期格式錯誤'}));
 		return;
 	}
+
 	$topic->update(
-		{ $query->{target} => timelocal(0, 0, 0, $date[2], $date[1]-1, $date[0]) }
+		{ $query->{target} => $dt }
 	);
 	$self->write($json->encode({ success => 'success' }));
 }

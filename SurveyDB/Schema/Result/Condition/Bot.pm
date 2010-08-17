@@ -1,5 +1,7 @@
 package SurveyDB::Schema::Result::Condition::Bot;
 use base qw/DBIx::Class::Core/;
+use strict;
+use warnings;
 
 __PACKAGE__->table('cond_bot');
 __PACKAGE__->add_columns(qw/topic bot/);

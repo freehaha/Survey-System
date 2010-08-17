@@ -1,5 +1,7 @@
 package SurveyDB::Schema::Result::Finished;
 use base qw/DBIx::Class::Core/;
+use strict;
+use warnings;
 
 __PACKAGE__->table('finished');
 __PACKAGE__->add_columns(qw/topic uid/);

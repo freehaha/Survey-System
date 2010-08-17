@@ -1,5 +1,7 @@
 package SurveyDB::Schema::Result::Condition::Group;
 use base qw/DBIx::Class::Core/;
+use strict;
+use warnings;
 
 __PACKAGE__->table('cond_group');
 __PACKAGE__->add_columns(qw/topic gid/);

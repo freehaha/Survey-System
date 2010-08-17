@@ -3,11 +3,15 @@ use Tatsumaki::Error;
 use Tatsumaki::Application;
 use Tatsumaki::HTTPClient;
 use Tatsumaki::Server;
+use strict;
+use warnings;
 
 package main;
 use Survey::Add;
 use Survey::Edit;
 use Survey::List;
+use strict;
+use warnings;
 
 my $app = Tatsumaki::Application->new([
 	'/add/(\S.*)' => 'Survey::AddTopic',

@@ -1,5 +1,7 @@
 package SurveyDB::Schema::Result::Question;
 use base qw/DBIx::Class::Core/;
+use strict;
+use warnings;
 
 __PACKAGE__->table('questions');
 __PACKAGE__->add_columns(qw/qid type topic questions sn/);

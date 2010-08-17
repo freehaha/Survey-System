@@ -1,6 +1,8 @@
 package Survey::Add;
 use Survey::Templates;
 use parent qw(Tatsumaki::Handler);
+use strict;
+use warnings;
 
 Template::Declare->init( dispatch_to => ['Survey::Templates'] );
 
@@ -17,6 +19,8 @@ use JSON;
 use utf8;
 use SurveyDB::Schema;
 use Time::Local;
+use strict;
+use warnings;
 
 my $schema = SurveyDB::Schema->connect_surveydb('etc/config.yml');
 my %cond_dp = (

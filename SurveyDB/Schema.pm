@@ -14,6 +14,8 @@ package SurveyDB::Schema;
 use base qw/DBIx::Class::Schema/;
 use utf8;
 use Exporter 'import';
+use strict;
+use warnings;
 our @EXPORT = qw(
 	likert_choice
 	custom_choice

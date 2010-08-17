@@ -30,10 +30,12 @@ use utf8;
 use SurveyDB::Schema;
 use Survey::Templates;
 use Time::Local;
+use strict;
+use warnings;
 Template::Declare->init( dispatch_to => ['Survey::Templates'] );
 
 my $schema = SurveyDB::Schema->connect_surveydb('etc/config.yml');
-%cmds = (
+my %cmds = (
 	'remove_cond' => \&remove_condition,
 	'change_cond' => \&change_condition,
 	'remove_topic' => \&remove_topic,
@@ -59,7 +61,7 @@ sub remove_condition {
 	my $query = shift;
 	my $ctype = $query->{target};
 	my $json = JSON->new->utf8(0);
-	@targets = split /[,\s]/, $query->{values};
+	my @targets = split /[,\s]/, $query->{values};
 	#TODO: will dispatching helps here/
 	if($ctype eq 'user') {
 		my $uids = $topic->cond_user->search_rs(
@@ -158,7 +160,7 @@ sub change_condition {
 		}));
 		return;
 	}
-	@targets = split /[,\s]/, $query->{origin};
+	my @targets = split /[,\s]/, $query->{origin};
 	#TODO: will dispatching helps here/
 	if($ctype eq 'user') {
 		my $uids = $topic->cond_user->search_rs(
@@ -387,7 +389,7 @@ sub get {
 
 	my $json = JSON->new->utf8(0);
 	#FIXME: get current user id and check permission here
-	my $query = decode_json($query);
+	$query = decode_json($query);
 	if(my $proc =  $cmds{$query->{cmd}}) {
 		$topic = $schema->resultset('Topic')->find(
 			{ topic => $topic },

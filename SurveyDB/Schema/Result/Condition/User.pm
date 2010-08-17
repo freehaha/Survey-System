@@ -1,5 +1,7 @@
 package SurveyDB::Schema::Result::Condition::User;
 use base qw/DBIx::Class::Core/;
+use strict;
+use warnings;
 
 __PACKAGE__->table('cond_user');
 __PACKAGE__->add_columns(qw/topic uid/);

@@ -1,5 +1,7 @@
 package SurveyDB::Schema::Result::Answer;
 use base qw/DBIx::Class::Core/;
+use strict;
+use warnings;
 
 __PACKAGE__->table('answer');
 __PACKAGE__->add_columns(qw/questions aid user options response/);

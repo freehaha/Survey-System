@@ -1,6 +1,8 @@
 package SurveyDB::Schema::Result::Topic;
 use JSON;
 use base qw/DBIx::Class::Core/;
+use strict;
+use warnings;
 
 __PACKAGE__->load_components(qw/InflateColumn::DateTime/);
 __PACKAGE__->table('topic');

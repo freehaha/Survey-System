@@ -178,6 +178,52 @@ private template edit_form => sub {
 	show('veil');
 };
 
+private template answer_form => sub {
+	my $self = shift;
+	my $topic = shift || die 'no topic specified';
+	my $already_answered = $topic->finished->count;
+	h1 { $topic->title };
+	h2 { $topic->description };
+	form {
+		attr {
+			id => 'answerform',
+			onsubmit => 'return submitAnswer(this);',
+		};
+
+		#time limit
+		#div {
+		#	my $tl = $topic->timelimit || 0;
+		#	span {'剩下時間:'};
+		#	show('count_down', $tl);
+		#};
+
+		show('question_sheet', $topic->questions);
+		div {
+			input {
+				attr {
+					id => 'btnSubmit',
+					type => 'submit',
+					value => '送出',
+				}
+			}
+			input {
+				attr {
+					id => 'btnReset',
+					type => 'reset',
+					value => '重填',
+				}
+			}
+		}
+	}
+	show('veil');
+};
+
+private template count_down => sub {
+	my $self = shift;
+	my $tl = shift;
+	outs $tl;
+};
+
 private template questions_container => sub {
 	my $self = shift;
 	my $questions = shift;
@@ -188,6 +234,48 @@ private template questions_container => sub {
 			show('question', $question);
 		}
 	}
+};
+
+private template question_sheet => sub {
+	my $self = shift;
+	my $questions = shift;
+	ul {
+		while(my $question = $questions->next) {
+			li { show('question_field', $question); }
+		}
+	};
+};
+
+private template question_field => sub {
+	my $self = shift;
+	my $question = shift;
+	my $qtype = $question->type;
+	div {
+		attr { class => 'qbox' };
+		div { $question->questions };
+		if($qtype =~ m/-choice$/) {
+			my $options = $question->options;
+			while(my $option = $options->next) {
+				span {
+					input {
+						attr {
+							type => 'radio',
+							name => $question->sn,
+							value => $option->point
+						};
+					};
+					outs $option->text;
+				};
+			}
+		} else {
+			input {
+				attr {
+					name => $question->sn,
+					type => 'text',
+				};
+			};
+		}
+	};
 };
 
 private template question => sub {
@@ -569,6 +657,27 @@ template list => sub {
 					});
 				';
 			};
+		};
+	}
+};
+
+template answer => sub {
+	my $self = shift;
+	my $topic = shift || die 'unknown topic';
+	html {
+		head {
+			title { '填寫問卷-'.$topic->title };
+			meta  {
+				attr { content => "text/html; charset=utf-8" }
+				attr { 'http-equiv' => "content-type" }
+			}
+			show('import_css', '/static/css/form.css');
+			show('include_script', '/static/js/jquery-1.4.2.min.js');
+			show('include_script', '/static/js/jquery-ui-1.8.2.custom.min.js');
+			show('include_script', '/static/js/surveyui.js');
+		}
+		body {
+			show('answer_form', $topic);
 		};
 	}
 };

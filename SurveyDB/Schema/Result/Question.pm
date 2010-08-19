@@ -38,6 +38,9 @@ sub answer {
 	my ($self, $user) = @_;
 	if($self->type eq 'custom-choice' or $self->type eq 'likert-choice') {
 		my $option = $_[2];
+		if($option !~ /^\d+$/) {
+			die 'malformed option';
+		}
 		if($user) { #if already answered, update it
 			my $ans = $self->get_user_answered($user);
 			if($ans) {

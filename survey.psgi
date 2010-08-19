@@ -10,6 +10,7 @@ package main;
 use Survey::Add;
 use Survey::Edit;
 use Survey::List;
+use Survey::Answer;
 use strict;
 use warnings;
 
@@ -18,6 +19,8 @@ my $app = Tatsumaki::Application->new([
 	'/add' => 'Survey::Add',
 	'/edit/(\d+)$' => 'Survey::Edit',
 	'/edit/(\d+)/(\S.*)$' => 'Survey::EditTopic',
+	'/answer/(\d+)$' => 'Survey::Answer',
+	'/answer/(\d+)/(\S.*)$' => 'Survey::SubmitAnswer',
 	'/list' => 'Survey::List',
 	]);
 

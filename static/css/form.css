@@ -123,6 +123,12 @@ div.ctype {
 	-webkit-border-radius:5px;
 	-khtml-border-radius:5px;
 }  
+.qbox div {
+	margin-bottom: 5px;
+}
+.qbox input {
+	width: 80%;
+}
 #formbtns {
 	margin-top: 10px;
 }
